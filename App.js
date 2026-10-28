@@ -5,9 +5,10 @@ import WelcomeScreen from './Welcome';
 import LoginScreen from './Login';
 import RegisterScreen from './Register';
 import ForgotPasswordScreen from './ForgotPassword';
+import HomeScreen from './Home';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot'
+  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home'
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,10 +29,15 @@ export default function App() {
   if (currentScreen === 'login') {
     return (
       <LoginScreen 
+        onLogin={() => setCurrentScreen('home')}
         onRegister={() => setCurrentScreen('register')} 
         onForgotPassword={() => setCurrentScreen('forgot')} 
       />
     );
+  }
+
+  if (currentScreen === 'home') {
+    return <HomeScreen />;
   }
 
   if (currentScreen === 'welcome') {

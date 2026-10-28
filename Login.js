@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-export default function LoginScreen({ onRegister, onForgotPassword }) {
+export default function LoginScreen({ onLogin, onRegister, onForgotPassword }) {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -57,7 +57,7 @@ export default function LoginScreen({ onRegister, onForgotPassword }) {
         </TouchableOpacity>
 
         {/* Botão Entrar */}
-        <TouchableOpacity style={styles.primaryButton}>
+        <TouchableOpacity style={styles.primaryButton} onPress={onLogin}>
           <Text style={styles.primaryButtonText}>Entrar</Text>
         </TouchableOpacity>
 
