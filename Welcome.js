@@ -14,17 +14,14 @@ export default function WelcomeScreen({ onStart }) {
     <View style={styles.container}>
       <StatusBar style="light" backgroundColor="transparent" translucent />
 
-      {/* Imagem de fundo */}
       <Image
         source={require('./assets/burger.png')}
         style={StyleSheet.absoluteFill}
         resizeMode="cover"
       />
 
-      {/* Camada escura translúcida */}
       <View style={styles.overlay}>
         
-        {/* Logótipo na mesma posição exata da Splash */}
         <View style={styles.logoContainer}>
           <Image
             source={require('./assets/logo (2).png')}
@@ -33,7 +30,6 @@ export default function WelcomeScreen({ onStart }) {
           />
         </View>
 
-        {/* Bloco inferior: Ícones e Botão */}
         <View style={styles.bottomContainer}>
           <View style={styles.featuresContainer}>
             
@@ -66,7 +62,6 @@ export default function WelcomeScreen({ onStart }) {
 
           </View>
 
-          {/* Botão Começar */}
           <TouchableOpacity 
             style={styles.button} 
             onPress={handlePress}

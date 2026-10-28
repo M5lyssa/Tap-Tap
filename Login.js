@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-export default function LoginScreen() {
+export default function LoginScreen({ onRegister, onForgotPassword }) {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -10,14 +10,23 @@ export default function LoginScreen() {
     >
       <StatusBar style="dark" backgroundColor="#ffffff" />
 
-      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer} 
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.headerContainer}>
-          <Text style={styles.title}>Bem-vindo de volta!</Text>
+          <Text style={styles.title}>Bem-vindo!</Text>
           <Text style={styles.subtitle}>Faça login para continuar</Text>
         </View>
 
         {/* Input E-mail */}
         <View style={styles.inputContainer}>
+          <Image 
+            source={require('./assets/Vector.png')} 
+            style={styles.inputIcon} 
+            resizeMode="contain" 
+          />
           <TextInput
             style={styles.input}
             placeholder="E-mail"
@@ -29,6 +38,11 @@ export default function LoginScreen() {
 
         {/* Input Senha */}
         <View style={styles.inputContainer}>
+          <Image 
+            source={require('./assets/akar-icons_lock-on.png')} 
+            style={styles.inputIcon} 
+            resizeMode="contain" 
+          />
           <TextInput
             style={styles.input}
             placeholder="Senha"
@@ -38,7 +52,7 @@ export default function LoginScreen() {
         </View>
 
         {/* Esqueceu sua senha */}
-        <TouchableOpacity style={styles.forgotContainer}>
+        <TouchableOpacity style={styles.forgotContainer} onPress={onForgotPassword}>
           <Text style={styles.forgotText}>Esqueceu sua senha?</Text>
         </TouchableOpacity>
 
@@ -62,7 +76,7 @@ export default function LoginScreen() {
         {/* Rodapé Cadastre-se */}
         <View style={styles.footerContainer}>
           <Text style={styles.footerText}>Não tem uma conta? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onRegister} activeOpacity={0.7}>
             <Text style={styles.registerText}>Cadastre-se</Text>
           </TouchableOpacity>
         </View>
@@ -97,16 +111,24 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#f9f9f9',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#e5e5e5',
     height: 56,
-    justifyContent: 'center',
     paddingHorizontal: 16,
     marginBottom: 16,
   },
+  inputIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 12,
+    tintColor: '#8B0000',
+  },
   input: {
+    flex: 1,
     fontSize: 16,
     color: '#000000',
   },

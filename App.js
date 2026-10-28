@@ -3,12 +3,13 @@ import { StyleSheet, View, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import WelcomeScreen from './Welcome';
 import LoginScreen from './Login';
+import RegisterScreen from './Register';
+import ForgotPasswordScreen from './ForgotPassword';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login'
+  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot'
 
   useEffect(() => {
-    // Temporizador de 2.5 segundos para passar da Splash para o Welcome
     const timer = setTimeout(() => {
       setCurrentScreen('welcome');
     }, 2500);
@@ -16,22 +17,27 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleGoToLogin = () => {
-    console.log('App.js recebeu o comando: Mudando para a tela de login!');
-    setCurrentScreen('login');
-  };
+  if (currentScreen === 'forgot') {
+    return <ForgotPasswordScreen onBack={() => setCurrentScreen('login')} />;
+  }
 
-  // Se o estado for 'login', mostra a tela de login
+  if (currentScreen === 'register') {
+    return <RegisterScreen onBack={() => setCurrentScreen('login')} />;
+  }
+
   if (currentScreen === 'login') {
-    return <LoginScreen />;
+    return (
+      <LoginScreen 
+        onRegister={() => setCurrentScreen('register')} 
+        onForgotPassword={() => setCurrentScreen('forgot')} 
+      />
+    );
   }
 
-  // Se o estado for 'welcome', mostra o ecrã de boas-vindas
   if (currentScreen === 'welcome') {
-    return <WelcomeScreen onStart={handleGoToLogin} />;
+    return <WelcomeScreen onStart={() => setCurrentScreen('login')} />;
   }
 
-  // Ecrã inicial (Splash Screen)
   return (
     <View style={styles.container}>
       <StatusBar style="light" backgroundColor="transparent" translucent />
