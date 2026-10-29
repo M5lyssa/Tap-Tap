@@ -27,18 +27,23 @@ const bannerSlides = [
   },
   {
     id: 'hamburguer',
-    image: require('./assets/promohamburguer.jpg'),
+    image: require('./assets/burgão.png'),
     label: 'Promoção de hambúrguer',
+  },
+  {
+    id: 'combos',
+    image: require('./assets/combão.png'),
+    label: 'Promoção de combos',
+  },
+  {
+    id: 'pizzas',
+    image: require('./assets/pizza.png'),
+    label: 'Promoção de pizzas',
   },
   {
     id: 'farmacia',
     image: require('./assets/farmacia.jpg'),
     label: 'Ofertas de farmácia',
-  },
-  {
-    id: 'ofertas',
-    image: require('./assets/imagemcarrocel.jpg'),
-    label: 'Ofertas de hoje: até 50% de desconto',
   },
 ];
 
@@ -51,7 +56,7 @@ const restaurants = [
     rating: '4,5',
     reviews: '(12k)',
     time: '30 - 45 min',
-    image: require('./assets/burger.png'),
+    image: require('./assets/burgão.png'),
   },
   {
     id: 'pizza-house',
@@ -61,7 +66,7 @@ const restaurants = [
     rating: '3,5',
     reviews: '(18k)',
     time: '30 - 45 min',
-    image: require('./assets/imagemcarrocel.jpg'),
+    image: require('./assets/pizza.png'),
   },
 ];
 
@@ -72,7 +77,7 @@ const tabs = [
   { id: 'profile', label: 'Perfil', image: require('./assets/perfil(2).png') },
 ];
 
-export default function HomeScreen() {
+export default function HomeScreen({ onRestaurantSelect }) {
   const [activeTab, setActiveTab] = useState('home');
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -231,6 +236,7 @@ export default function HomeScreen() {
                 key={restaurant.id}
                 style={styles.restaurantCard}
                 activeOpacity={0.9}
+                onPress={() => onRestaurantSelect?.(restaurant)}
                 accessibilityRole="button"
                 accessibilityLabel={`${restaurant.name}, ${restaurant.category}, nota ${restaurant.rating}`}
               >

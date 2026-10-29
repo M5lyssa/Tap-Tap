@@ -6,9 +6,13 @@ import LoginScreen from './Login';
 import RegisterScreen from './Register';
 import ForgotPasswordScreen from './ForgotPassword';
 import HomeScreen from './Home';
+import RestaurantDetailScreen from './RestaurantDetail';
+import CartScreen from './CartScreen';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home'
+  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'restaurant' | 'cart'
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -37,7 +41,79 @@ export default function App() {
   }
 
   if (currentScreen === 'home') {
-    return <HomeScreen />;
+    return (
+      <HomeScreen
+        onRestaurantSelect={(restaurant) => {
+          setSelectedRestaurant(restaurant);
+          setCurrentScreen('restaurant');
+        }}
+      />
+    );
+  }
+
+  if (currentScreen === 'restaurant' && selectedRestaurant) {
+    return (
+      <RestaurantDetailScreen
+        restaurant={selectedRestaurant}
+        onBack={() => setCurrentScreen('home')}
+        cartCount={cartItems.reduce((count, item) => count + item.quantity, 0)}
+        onOpenCart={() => setCurrentScreen('cart')}
+        onAddToCart={(menuItem) => {
+          const itemId = `${selectedRestaurant.id}-${menuItem.id}`;
+          const price = Number(
+            menuItem.price.replace(/[^\d,]/g, '').replace(',', '.'),
+          );
+          setCartItems((items) => {
+            const existingItem = items.find((item) => item.id === itemId);
+
+            if (existingItem) {
+              return items.map((item) =>
+                item.id === itemId
+                  ? { ...item, quantity: item.quantity + 1 }
+                  : item,
+              );
+            }
+
+            return [
+              ...items,
+              {
+                id: itemId,
+                name: menuItem.title,
+                price,
+                quantity: 1,
+                image: menuItem.image,
+              },
+            ];
+          });
+        }}
+      />
+    );
+  }
+
+  if (currentScreen === 'cart') {
+    return (
+      <CartScreen
+        cartItems={cartItems}
+        onBack={() => setCurrentScreen('restaurant')}
+        onUpdateQuantity={(id, delta) => {
+          setCartItems((items) =>
+            items
+              .map((item) => {
+                if (item.id !== id) {
+                  return item;
+                }
+
+                const quantity = item.quantity + delta;
+                return quantity > 0 ? { ...item, quantity } : null;
+              })
+              .filter(Boolean),
+          );
+        }}
+        onRemoveItem={(id) =>
+          setCartItems((items) => items.filter((item) => item.id !== id))
+        }
+      />
+    );
   }
 
   if (currentScreen === 'welcome') {

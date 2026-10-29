@@ -70,6 +70,11 @@ export default function LoginScreen({ onLogin, onRegister, onForgotPassword }) {
 
         {/* Botão Entrar com Google */}
         <TouchableOpacity style={styles.googleButton}>
+          <Image
+            source={require('./assets/gugo.png')}
+            style={styles.googleIcon}
+            resizeMode="contain"
+          />
           <Text style={styles.googleButtonText}>Entrar com Google</Text>
         </TouchableOpacity>
 
@@ -125,7 +130,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 12,
-    tintColor: '#8B0000',
+    tintColor: '#050101',
   },
   input: {
     flex: 1,
@@ -145,7 +150,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 56,
     backgroundColor: '#8B0000',
-    borderRadius: 12,
+    borderRadius: 25,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
@@ -175,15 +181,21 @@ const styles = StyleSheet.create({
   googleButton: {
     width: '100%',
     height: 56,
-    backgroundColor: '#8B0000',
-    borderRadius: 12,
+    backgroundColor: '#dbd6d6',
+    borderRadius: 25,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
-    elevation: 3,
+    elevation: 6,
+  },
+  googleIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 10,
   },
   googleButtonText: {
-    color: '#ffffff',
+    color: '#080606',
     fontSize: 16,
     fontWeight: 'bold',
   },
