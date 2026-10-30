@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Alert,
   Image,
   SafeAreaView,
   ScrollView,
@@ -13,7 +12,13 @@ import {
 const formatCurrency = (value) =>
   `R$ ${value.toFixed(2).replace('.', ',')}`;
 
-export default function CartScreen({ cartItems, onBack, onUpdateQuantity, onRemoveItem }) {
+export default function CartScreen({
+  cartItems,
+  onBack,
+  onContinue,
+  onUpdateQuantity,
+  onRemoveItem,
+}) {
   const deliveryFee = 0;
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -137,12 +142,7 @@ export default function CartScreen({ cartItems, onBack, onUpdateQuantity, onRemo
             <TouchableOpacity
               style={styles.continueButton}
               activeOpacity={0.8}
-              onPress={() =>
-                Alert.alert(
-                  'Finalização do pedido',
-                  'A finalização do pedido estará disponível em breve.',
-                )
-              }
+              onPress={onContinue}
               accessibilityRole="button"
             >
               <Text style={styles.continueButtonText}>Continuar</Text>

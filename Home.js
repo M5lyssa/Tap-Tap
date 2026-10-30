@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-const categories = [
+export const categories = [
   { id: 'lanches', name: 'Lanches', image: require('./assets/lanches.png') },
   { id: 'japonesa', name: 'Japonesa', image: require('./assets/japones.png') },
   { id: 'bebidas', name: 'Bebidas', image: require('./assets/bebidas.png') },
@@ -27,27 +27,22 @@ const bannerSlides = [
   },
   {
     id: 'hamburguer',
-    image: require('./assets/burgão.png'),
+    image: require('./assets/promohamburguer.jpg'),
     label: 'Promoção de hambúrguer',
-  },
-  {
-    id: 'combos',
-    image: require('./assets/combão.png'),
-    label: 'Promoção de combos',
-  },
-  {
-    id: 'pizzas',
-    image: require('./assets/pizza.png'),
-    label: 'Promoção de pizzas',
   },
   {
     id: 'farmacia',
     image: require('./assets/farmacia.jpg'),
     label: 'Ofertas de farmácia',
   },
+  {
+    id: 'ofertas',
+    image: require('./assets/imagemcarrocel.jpg'),
+    label: 'Ofertas de hoje: até 50% de desconto',
+  },
 ];
 
-const restaurants = [
+export const restaurants = [
   {
     id: 'burger-house',
     name: 'Burguer house',
@@ -77,8 +72,14 @@ const tabs = [
   { id: 'profile', label: 'Perfil', image: require('./assets/perfil(2).png') },
 ];
 
-export default function HomeScreen({ onRestaurantSelect }) {
-  const [activeTab, setActiveTab] = useState('home');
+export default function HomeScreen({
+  onRestaurantSelect,
+  onProfileSelect,
+  onExploreSelect,
+  initialTab = 'home',
+  onTabSelect,
+}) {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeBanner, setActiveBanner] = useState(0);
@@ -280,7 +281,20 @@ export default function HomeScreen({ onRestaurantSelect }) {
             <TouchableOpacity
               key={tab.id}
               style={[styles.tabButton, isActive && styles.activeTabButton]}
-              onPress={() => setActiveTab(tab.id)}
+              onPress={() => {
+                if (tab.id === 'profile') {
+                  onProfileSelect?.();
+                  return;
+                }
+
+                if (tab.id === 'explore') {
+                  onExploreSelect?.();
+                  return;
+                }
+
+                setActiveTab(tab.id);
+                onTabSelect?.(tab.id);
+              }}
               activeOpacity={0.8}
               accessibilityRole="button"
               accessibilityLabel={tab.label}
