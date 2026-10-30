@@ -175,9 +175,7 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
               tab.id === 'explore' && styles.activeTabButton,
             ]}
             onPress={() => {
-              if (tab.id !== 'menu') {
-                onTabSelect?.(tab.id);
-              }
+              onTabSelect?.(tab.id);
             }}
             activeOpacity={0.8}
             accessibilityRole="button"

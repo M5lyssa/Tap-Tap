@@ -6,14 +6,19 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 
-export default function CheckoutScreen({ cartTotal = 43.80, onBack, onOrderComplete }) {
+export default function CheckoutScreen({
+  cartTotal = 43.8,
+  selectedCoupon,
+  couponDiscount = 0,
+  onBack,
+  onChooseCoupon,
+  onOrderComplete,
+}) {
   const [selectedPayment, setSelectedPayment] = useState('pix');
-  const [coupon, setCoupon] = useState('');
   const [showPopup, setShowPopup] = useState(false);
 
   const handleFinalizeOrder = () => {
@@ -188,20 +193,26 @@ export default function CheckoutScreen({ cartTotal = 43.80, onBack, onOrderCompl
         {/* Cupom de desconto */}
         <View style={styles.couponCard}>
           <Text style={styles.sectionCardTitle}>Cupom de desconto</Text>
-          <View style={styles.couponInputWrapper}>
-            <Image
-              source={require('./assets/Group.png')}
-              style={styles.couponIcon}
-              resizeMode="contain"
-            />
-            <TextInput
-              style={styles.couponInput}
-              placeholder="Inserir cupom"
-              placeholderTextColor="#888"
-              value={coupon}
-              onChangeText={setCoupon}
-            />
+          <View style={styles.couponInfoWrapper}>
+            <Text style={styles.appliedCouponText}>
+              {selectedCoupon ? selectedCoupon.code : 'Nenhum cupom aplicado'}
+            </Text>
+            <TouchableOpacity
+              style={styles.chooseCouponButton}
+              onPress={onChooseCoupon}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+            >
+              <Text style={styles.chooseCouponText}>
+                {selectedCoupon ? 'Trocar' : 'Escolher cupom'}
+              </Text>
+            </TouchableOpacity>
           </View>
+          {selectedCoupon && couponDiscount > 0 && (
+            <Text style={styles.couponDiscountText}>
+              Desconto: -{formatCurrency(couponDiscount)}
+            </Text>
+          )}
         </View>
 
         {/* Total e Botão Finalizar */}
@@ -353,23 +364,37 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     elevation: 3,
   },
-  couponInputWrapper: {
+  couponInfoWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#FFF',
     borderRadius: 10,
     paddingHorizontal: 12,
     height: 46,
   },
-  couponIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  couponInput: {
+  appliedCouponText: {
     flex: 1,
     fontSize: 14,
     color: '#000',
+    fontWeight: '600',
+  },
+  chooseCouponButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#F2DADA',
+  },
+  chooseCouponText: {
+    color: '#7A1313',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  couponDiscountText: {
+    marginTop: 8,
+    color: '#FFF',
+    fontSize: 13,
+    fontWeight: '600',
   },
   footerSummary: {
     marginTop: 8,

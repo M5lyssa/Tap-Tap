@@ -38,7 +38,12 @@ const menuOptions = [
   },
 ];
 
-export default function ProfileScreen({ onTabSelect, onLogout }) {
+export default function ProfileScreen({
+  onTabSelect,
+  onLogout,
+  onCouponsSelect,
+  onFavoritesSelect,
+}) {
   const showUnavailableMessage = (title) => {
     Alert.alert(title, 'Esta opção estará disponível em breve.');
   };
@@ -104,7 +109,13 @@ export default function ProfileScreen({ onTabSelect, onLogout }) {
               key={item.id}
               style={styles.menuButton}
               activeOpacity={0.7}
-              onPress={() => showUnavailableMessage(item.label)}
+              onPress={() =>
+                item.id === 'coupons'
+                  ? onCouponsSelect?.()
+                  : item.id === 'favorites'
+                    ? onFavoritesSelect?.()
+                    : showUnavailableMessage(item.label)
+              }
             >
               <View style={styles.menuLeftContent}>
                 <Image

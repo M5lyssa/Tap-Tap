@@ -18,13 +18,17 @@ export default function CartScreen({
   onContinue,
   onUpdateQuantity,
   onRemoveItem,
+  selectedCoupon,
+  couponDiscount = 0,
+  deliveryFee = 0,
+  onChooseCoupon,
+  onRemoveCoupon,
 }) {
-  const deliveryFee = 0;
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
   );
-  const total = subtotal + deliveryFee;
+  const total = Math.max(0, subtotal + deliveryFee - couponDiscount);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -55,6 +59,15 @@ export default function CartScreen({
             <Text style={styles.emptyHint}>
               Adicione itens do cardápio para continuar.
             </Text>
+            <TouchableOpacity
+              style={styles.emptyCouponButton}
+              onPress={onChooseCoupon}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Abrir meus cupons"
+            >
+              <Text style={styles.emptyCouponButtonText}>Ver meus cupons</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           cartItems.map((item) => (
@@ -110,15 +123,55 @@ export default function CartScreen({
         <View style={styles.footerContainer}>
           <Text style={styles.summaryTitle}>Resumo de valores</Text>
 
+          <View style={styles.couponRow}>
+            <View style={styles.couponInfo}>
+              <Text style={styles.summaryLabel}>Cupom</Text>
+              <Text style={styles.couponCode}>
+                {selectedCoupon ? selectedCoupon.code : 'Nenhum aplicado'}
+              </Text>
+            </View>
+            {selectedCoupon && (
+              <TouchableOpacity
+                onPress={onRemoveCoupon}
+                accessibilityRole="button"
+                accessibilityLabel="Remover cupom"
+              >
+                <Text style={styles.removeCouponText}>Remover</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={styles.chooseCouponButton}
+              onPress={onChooseCoupon}
+              accessibilityRole="button"
+            >
+              <Text style={styles.chooseCouponText}>
+                {selectedCoupon ? 'Trocar' : 'Usar cupom'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Sub-total</Text>
             <Text style={styles.summaryValue}>{formatCurrency(subtotal)}</Text>
           </View>
 
+          {selectedCoupon && couponDiscount > 0 && (
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>
+                Desconto ({selectedCoupon.code})
+              </Text>
+              <Text style={styles.discountValue}>
+                -{formatCurrency(couponDiscount)}
+              </Text>
+            </View>
+          )}
+
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Entrega</Text>
             <Text style={styles.summaryValue}>
-              {formatCurrency(deliveryFee)}
+              {selectedCoupon?.type === 'free-delivery'
+                ? 'Grátis'
+                : formatCurrency(deliveryFee)}
             </Text>
           </View>
 
@@ -191,7 +244,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: 16,
     paddingTop: 10,
-    paddingBottom: 300,
+    paddingBottom: 360,
   },
   emptyScrollContainer: {
     flexGrow: 1,
@@ -215,6 +268,18 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     marginTop: 6,
+  },
+  emptyCouponButton: {
+    marginTop: 18,
+    paddingVertical: 11,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    backgroundColor: '#7A1313',
+  },
+  emptyCouponButtonText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   cartItemCard: {
     flexDirection: 'row',
@@ -316,6 +381,46 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#000',
     fontWeight: '500',
+  },
+  couponRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#FFF5F5',
+    borderRadius: 8,
+  },
+  couponInfo: {
+    flex: 1,
+  },
+  couponCode: {
+    color: '#7A1313',
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginTop: 2,
+  },
+  removeCouponText: {
+    color: '#777',
+    fontSize: 12,
+    marginRight: 10,
+    textDecorationLine: 'underline',
+  },
+  chooseCouponButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 9,
+    borderRadius: 6,
+    backgroundColor: '#7A1313',
+  },
+  chooseCouponText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  discountValue: {
+    color: '#18733B',
+    fontSize: 14,
+    fontWeight: '600',
   },
   totalRow: {
     marginBottom: 16,

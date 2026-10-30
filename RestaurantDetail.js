@@ -97,9 +97,10 @@ export default function RestaurantDetailScreen({
   cartCount = 0,
   onOpenCart,
   onAddToCart,
+  isFavorite = false,
+  onToggleFavorite,
 }) {
   const [activeTab, setActiveTab] = useState('cardapio');
-  const [isFavorite, setIsFavorite] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
   const menuItems = menuByRestaurant[restaurant.id] || menuByRestaurant['burger-house'];
@@ -147,7 +148,7 @@ export default function RestaurantDetailScreen({
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.floatingButtonRight}
-            onPress={() => setIsFavorite((favorite) => !favorite)}
+            onPress={onToggleFavorite}
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel={

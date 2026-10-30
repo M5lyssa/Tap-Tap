@@ -12,12 +12,43 @@ import CheckoutScreen from './CheckoutScreen';
 import TapEffects from './TapEffects';
 import ProfileScreen from './ProfileScreen';
 import ExploreScreen from './ExploreScreen';
+import CouponsScreen from './CouponsScreen';
+import FavoritesScreen from './FavoritesScreen';
+import { calculateCouponDiscount } from './couponUtils';
+import { restaurants } from './catalog';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'explore' | 'profile' | 'restaurant' | 'cart' | 'checkout'
+  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'explore' | 'profile' | 'coupons' | 'favorites' | 'restaurant' | 'cart' | 'checkout'
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [cartItems, setCartItems] = useState([]);
+  const [favoriteRestaurantIds, setFavoriteRestaurantIds] = useState([]);
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [homeTab, setHomeTab] = useState('home');
+  const [cartReturnScreen, setCartReturnScreen] = useState('home');
+  const [couponReturnScreen, setCouponReturnScreen] = useState('profile');
+  const [restaurantReturnScreen, setRestaurantReturnScreen] = useState('home');
+
+  const openCart = (returnScreen) => {
+    setCartReturnScreen(returnScreen);
+    setCurrentScreen('cart');
+  };
+
+  const openCoupons = (returnScreen) => {
+    setCouponReturnScreen(returnScreen);
+    setCurrentScreen('coupons');
+  };
+
+  const deliveryFee = 0;
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  const couponDiscount = calculateCouponDiscount(
+    selectedCoupon,
+    cartItems,
+    deliveryFee,
+  );
+  const cartTotal = Math.max(0, subtotal + deliveryFee - couponDiscount);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -63,8 +94,10 @@ export default function App() {
           onTabSelect={setHomeTab}
           onProfileSelect={() => setCurrentScreen('profile')}
           onExploreSelect={() => setCurrentScreen('explore')}
+          onCartSelect={() => openCart('home')}
           onRestaurantSelect={(restaurant) => {
             setSelectedRestaurant(restaurant);
+            setRestaurantReturnScreen('home');
             setCurrentScreen('restaurant');
           }}
         />
@@ -76,6 +109,8 @@ export default function App() {
     return (
       <TapEffects>
         <ProfileScreen
+          onCouponsSelect={() => openCoupons('profile')}
+          onFavoritesSelect={() => setCurrentScreen('favorites')}
           onTabSelect={(tab) => {
             if (tab === 'home') {
               setHomeTab('home');
@@ -85,9 +120,52 @@ export default function App() {
 
             if (tab === 'explore') {
               setCurrentScreen('explore');
+              return;
+            }
+
+            if (tab === 'menu') {
+              openCart('profile');
             }
           }}
           onLogout={() => setCurrentScreen('login')}
+        />
+      </TapEffects>
+    );
+  }
+
+  if (currentScreen === 'favorites') {
+    return (
+      <TapEffects>
+        <FavoritesScreen
+          favorites={restaurants.filter((restaurant) =>
+            favoriteRestaurantIds.includes(restaurant.id),
+          )}
+          onBack={() => setCurrentScreen('profile')}
+          onRemoveFavorite={(restaurantId) =>
+            setFavoriteRestaurantIds((ids) =>
+              ids.filter((id) => id !== restaurantId),
+            )
+          }
+          onRestaurantSelect={(restaurant) => {
+            setSelectedRestaurant(restaurant);
+            setRestaurantReturnScreen('favorites');
+            setCurrentScreen('restaurant');
+          }}
+        />
+      </TapEffects>
+    );
+  }
+
+  if (currentScreen === 'coupons') {
+    return (
+      <TapEffects>
+        <CouponsScreen
+          selectedCoupon={selectedCoupon}
+          onBack={() => setCurrentScreen(couponReturnScreen)}
+          onSelectCoupon={(coupon) => {
+            setSelectedCoupon(coupon);
+            setCurrentScreen(couponReturnScreen);
+          }}
         />
       </TapEffects>
     );
@@ -106,10 +184,16 @@ export default function App() {
 
             if (tab === 'profile') {
               setCurrentScreen('profile');
+              return;
+            }
+
+            if (tab === 'menu') {
+              openCart('explore');
             }
           }}
           onRestaurantSelect={(restaurant) => {
             setSelectedRestaurant(restaurant);
+            setRestaurantReturnScreen('explore');
             setCurrentScreen('restaurant');
           }}
         />
@@ -122,9 +206,17 @@ export default function App() {
       <TapEffects>
         <RestaurantDetailScreen
           restaurant={selectedRestaurant}
-          onBack={() => setCurrentScreen('home')}
+          onBack={() => setCurrentScreen(restaurantReturnScreen)}
+          isFavorite={favoriteRestaurantIds.includes(selectedRestaurant.id)}
+          onToggleFavorite={() =>
+            setFavoriteRestaurantIds((ids) =>
+              ids.includes(selectedRestaurant.id)
+                ? ids.filter((id) => id !== selectedRestaurant.id)
+                : [...ids, selectedRestaurant.id],
+            )
+          }
           cartCount={cartItems.reduce((count, item) => count + item.quantity, 0)}
-          onOpenCart={() => setCurrentScreen('cart')}
+          onOpenCart={() => openCart('restaurant')}
           onAddToCart={(menuItem) => {
             const itemId = `${selectedRestaurant.id}-${menuItem.id}`;
             const price = Number(
@@ -149,6 +241,7 @@ export default function App() {
                   price,
                   quantity: 1,
                   image: menuItem.image,
+                  categoryId: selectedRestaurant.categoryId,
                 },
               ];
             });
@@ -163,8 +256,13 @@ export default function App() {
       <TapEffects>
         <CartScreen
           cartItems={cartItems}
-          onBack={() => setCurrentScreen('restaurant')}
+          selectedCoupon={selectedCoupon}
+          couponDiscount={couponDiscount}
+          deliveryFee={deliveryFee}
+          onBack={() => setCurrentScreen(cartReturnScreen)}
           onContinue={() => setCurrentScreen('checkout')}
+          onChooseCoupon={() => openCoupons('cart')}
+          onRemoveCoupon={() => setSelectedCoupon(null)}
           onUpdateQuantity={(id, delta) => {
             setCartItems((items) =>
               items
@@ -188,18 +286,17 @@ export default function App() {
   }
 
   if (currentScreen === 'checkout') {
-    const total = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    );
-
     return (
       <TapEffects>
         <CheckoutScreen
-          cartTotal={total}
+          cartTotal={cartTotal}
+          selectedCoupon={selectedCoupon}
+          couponDiscount={couponDiscount}
           onBack={() => setCurrentScreen('cart')}
+          onChooseCoupon={() => openCoupons('checkout')}
           onOrderComplete={() => {
             setCartItems([]);
+            setSelectedCoupon(null);
             setHomeTab('home');
             setCurrentScreen('home');
           }}

@@ -47,6 +47,7 @@ export default function HomeScreen({
   onRestaurantSelect,
   onProfileSelect,
   onExploreSelect,
+  onCartSelect,
   initialTab = 'home',
   onTabSelect,
 }) {
@@ -314,6 +315,11 @@ export default function HomeScreen({
 
                 if (tab.id === 'explore') {
                   onExploreSelect?.();
+                  return;
+                }
+
+                if (tab.id === 'menu') {
+                  onCartSelect?.();
                   return;
                 }
 
