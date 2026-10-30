@@ -13,7 +13,7 @@ import {
 const formatCurrency = (value) =>
   `R$ ${value.toFixed(2).replace('.', ',')}`;
 
-export default function CartScreen({ cartItems, onBack, onUpdateQuantity, onRemoveItem }) {
+export default function CartScreen({ cartItems, onBack, onUpdateQuantity, onRemoveItem, onCheckout }) {
   const deliveryFee = 0;
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -137,12 +137,7 @@ export default function CartScreen({ cartItems, onBack, onUpdateQuantity, onRemo
             <TouchableOpacity
               style={styles.continueButton}
               activeOpacity={0.8}
-              onPress={() =>
-                Alert.alert(
-                  'Finalização do pedido',
-                  'A finalização do pedido estará disponível em breve.',
-                )
-              }
+              onPress={onCheckout}
               accessibilityRole="button"
             >
               <Text style={styles.continueButtonText}>Continuar</Text>
@@ -164,6 +159,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
+    marginTop: 24,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
     backgroundColor: '#FAFAFA',

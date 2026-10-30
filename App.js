@@ -9,9 +9,10 @@ import HomeScreen from './Home';
 import ProfileScreen from './ProfileScreen';
 import RestaurantDetailScreen from './RestaurantDetail';
 import CartScreen from './CartScreen';
+import CheckoutScreen from './CheckoutScreen';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'profile' | 'restaurant' | 'cart'
+  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'profile' | 'restaurant' | 'cart' | 'checkout'
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [cartItems, setCartItems] = useState([]);
 
@@ -131,6 +132,20 @@ export default function App() {
         onRemoveItem={(id) =>
           setCartItems((items) => items.filter((item) => item.id !== id))
         }
+        onCheckout={() => setCurrentScreen('checkout')}
+      />
+    );
+  }
+
+  if (currentScreen === 'checkout') {
+    return (
+      <CheckoutScreen
+        cartTotal={cartItems.reduce((total, item) => total + item.price * item.quantity, 0)}
+        onBack={() => setCurrentScreen('cart')}
+        onOrderComplete={() => {
+          setCartItems([]); // Limpa o carrinho após finalizar o pedido
+          setCurrentScreen('home'); // Retorna para a tela inicial
+        }}
       />
     );
   }
