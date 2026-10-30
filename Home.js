@@ -1,6 +1,7 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Image,
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -10,14 +11,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-
-export const categories = [
-  { id: 'lanches', name: 'Lanches', image: require('./assets/lanches.png') },
-  { id: 'japonesa', name: 'Japonesa', image: require('./assets/japones.png') },
-  { id: 'bebidas', name: 'Bebidas', image: require('./assets/bebidas.png') },
-  { id: 'pizzas', name: 'Pizzas', image: require('./assets/pizzas.png') },
-  { id: 'outras', name: 'Outras', image: require('./assets/outros.png') },
-];
+import { categories, restaurants } from './catalog';
 
 const bannerSlides = [
   {
@@ -42,29 +36,6 @@ const bannerSlides = [
   },
 ];
 
-export const restaurants = [
-  {
-    id: 'burger-house',
-    name: 'Burguer house',
-    category: 'Hambúrguer • $$',
-    categoryId: 'lanches',
-    rating: '4,5',
-    reviews: '(12k)',
-    time: '30 - 45 min',
-    image: require('./assets/burgão.png'),
-  },
-  {
-    id: 'pizza-house',
-    name: 'Pizzahouse',
-    category: 'Pizza • $$$',
-    categoryId: 'pizzas',
-    rating: '3,5',
-    reviews: '(18k)',
-    time: '30 - 45 min',
-    image: require('./assets/pizza.png'),
-  },
-];
-
 const tabs = [
   { id: 'home', label: 'Início', image: require('./assets/home.png') },
   { id: 'explore', label: 'Explorar', image: require('./assets/imagemmapa.png') },
@@ -83,9 +54,46 @@ export default function HomeScreen({
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeBanner, setActiveBanner] = useState(0);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
   const bannerCarouselRef = useRef(null);
+  const mainScrollViewRef = useRef(null);
+
   const { width: windowWidth } = useWindowDimensions();
   const bannerWidth = windowWidth - 32;
+
+  // Monitora a abertura e fechamento do teclado virtual
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => setIsKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => setIsKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  // Carrossel automático
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveBanner((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % bannerSlides.length;
+        bannerCarouselRef.current?.scrollTo({
+          x: nextIndex * bannerWidth,
+          animated: true,
+        });
+        return nextIndex;
+      });
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [bannerWidth]);
 
   const filteredRestaurants = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase('pt-BR');
@@ -104,25 +112,33 @@ export default function HomeScreen({
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
+        ref={mainScrollViewRef}
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Localização */}
         <View style={styles.locationContainer}>
           <Image
-            source={require('./assets/boxicons_location-pin.png')}
+            source={require('./assets/famicons_location.png')}
             style={styles.locationIcon}
             resizeMode="contain"
           />
           <Text style={styles.locationText}>Maceió, AL</Text>
-          <Text style={styles.locationChevron}>⌄</Text>
+          <Image
+            source={require('./assets/Vector.png')}
+            style={styles.locationChevron}
+            resizeMode="contain"
+          />
         </View>
 
+        {/* Barra de pesquisa */}
         <View style={styles.searchContainer}>
-          <View style={styles.searchIcon}>
-            <View style={styles.searchIconCircle} />
-            <View style={styles.searchIconHandle} />
-          </View>
+          <Image
+            source={require('./assets/ci_search-magnifying-glass.png')}
+            style={styles.searchIconImg}
+            resizeMode="contain"
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Buscar restaurantes, pratos..."
@@ -134,6 +150,7 @@ export default function HomeScreen({
           />
         </View>
 
+        {/* Carrossel */}
         <ScrollView
           ref={bannerCarouselRef}
           horizontal
@@ -180,6 +197,7 @@ export default function HomeScreen({
           ))}
         </View>
 
+        {/* Categorias */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -230,6 +248,7 @@ export default function HomeScreen({
           </TouchableOpacity>
         </View>
 
+        {/* Grade de Restaurantes */}
         {filteredRestaurants.length > 0 ? (
           <View style={styles.restaurantsGrid}>
             {filteredRestaurants.map((restaurant) => (
@@ -273,14 +292,20 @@ export default function HomeScreen({
         )}
       </ScrollView>
 
-      <View style={styles.bottomTabBar}>
-        {tabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-
-          return (
+      {/* Barra Inferior (Some automaticamente quando o teclado abre) */}
+      <View
+        style={[
+          styles.bottomTabBar,
+          isKeyboardVisible && styles.hiddenBottomTabBar,
+        ]}
+      >
+          {tabs.map((tab) => (
             <TouchableOpacity
               key={tab.id}
-              style={[styles.tabButton, isActive && styles.activeTabButton]}
+              style={[
+                styles.tabButton,
+                activeTab === tab.id && styles.activeTabButton,
+              ]}
               onPress={() => {
                 if (tab.id === 'profile') {
                   onProfileSelect?.();
@@ -298,12 +323,11 @@ export default function HomeScreen({
               activeOpacity={0.8}
               accessibilityRole="button"
               accessibilityLabel={tab.label}
-              accessibilityState={{ selected: isActive }}
+              accessibilityState={{ selected: activeTab === tab.id }}
             >
               <Image source={tab.image} style={styles.tabIcon} resizeMode="contain" />
             </TouchableOpacity>
-          );
-        })}
+          ))}
       </View>
     </SafeAreaView>
   );
@@ -316,18 +340,19 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingHorizontal: 16,
-    paddingTop: 10,
+    paddingTop: 24,
     paddingBottom: 90,
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
+    marginTop: 8,
   },
   locationIcon: {
     width: 22,
     height: 22,
-    marginRight: 4,
+    marginRight: 6,
   },
   locationText: {
     fontSize: 18,
@@ -335,10 +360,10 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   locationChevron: {
-    fontSize: 20,
-    color: '#000',
-    marginLeft: 5,
-    marginTop: -5,
+    width: 14,
+    height: 14,
+    marginLeft: 6,
+    tintColor: '#000',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -355,27 +380,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     elevation: 2,
   },
-  searchIcon: {
+  searchIconImg: {
     width: 20,
-    height: 16,
-    position: 'relative',
+    height: 20,
     marginRight: 12,
-  },
-  searchIconCircle: {
-    width: 14,
-    height: 14,
-    borderWidth: 2,
-    borderColor: '#8B0000',
-    borderRadius: 8,
-  },
-  searchIconHandle: {
-    position: 'absolute',
-    width: 8,
-    height: 2,
-    right: -5,
-    bottom: 0,
-    backgroundColor: '#8B0000',
-    transform: [{ rotate: '45deg' }],
   },
   searchInput: {
     flex: 1,
@@ -389,6 +397,7 @@ const styles = StyleSheet.create({
   },
   bannerImage: {
     height: 110,
+    borderRadius: 16,
   },
   bannerIndicators: {
     flexDirection: 'row',
@@ -530,6 +539,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#5a0d0d',
+  },
+  hiddenBottomTabBar: {
+    display: 'none',
   },
   tabButton: {
     flex: 1,

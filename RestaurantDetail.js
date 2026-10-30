@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Alert,
   Image,
   SafeAreaView,
   ScrollView,
@@ -59,6 +58,39 @@ const menuByRestaurant = {
   ],
 };
 
+const reviewsList = [
+  { id: '1', author: 'Carlos Silva', date: '12/10/2026', rating: '★★★★★', comment: 'Excelente atendimento e lanche maravilhoso! Recomendo muito.' },
+  { id: '2', author: 'Ana Souza', date: '10/10/2026', rating: '★★★★☆', comment: 'Muito bom, só demorou um pouquinho a entrega.' },
+  { id: '3', author: 'Marcos Oliveira', date: '05/10/2026', rating: '★★★★★', comment: 'O melhor da região, sempre peço aqui!' },
+  { id: '4', author: 'Beatriz Lima', date: '01/10/2026', rating: '★★★★★', comment: 'Sensacional! Sabor impecável.' },
+  { id: '5', author: 'João Pedro', date: '28/09/2026', rating: '★★★★☆', comment: 'Gostei bastante, porção bem servida.' },
+  { id: '6', author: 'Fernanda Costa', date: '25/09/2026', rating: '★★★★★', comment: 'Perfeito! Chegou super quente e rápido.' },
+  { id: '7', author: 'Lucas Martins', date: '20/09/2026', rating: '★★★☆☆', comment: 'Bom, mas achei o preço um pouco alto.' },
+  { id: '8', author: 'Juliana Rocha', date: '18/09/2026', rating: '★★★★★', comment: 'Maravilhoso, meu favorito!' },
+  { id: '9', author: 'Gabriel Santos', date: '15/09/2026', rating: '★★★★☆', comment: 'Muito saboroso, vale a pena.' },
+  { id: '10', author: 'Larissa Ribeiro', date: '10/09/2026', rating: '★★★★★', comment: 'Simplesmente perfeito, nota 10!' },
+  { id: '11', author: 'Rafael Almeida', date: '08/09/2026', rating: '★★★★★', comment: 'Atendimento nota 10 e comida deliciosa.' },
+  { id: '12', author: 'Camila Fernandes', date: '02/09/2026', rating: '★★★★☆', comment: 'Muito bom, recomendo a todos.' },
+  { id: '13', author: 'Bruno Carvalho', date: '30/08/2026', rating: '★★★★★', comment: 'Melhor hambúrguer que já comi.' },
+  { id: '14', author: 'Mariana Dias', date: '27/08/2026', rating: '★★★★★', comment: 'Tudo muito fresco e saboroso.' },
+  { id: '15', author: 'Thiago Mendes', date: '22/08/2026', rating: '★★★★☆', comment: 'Chegou no horário combinado, recomendo.' },
+  { id: '16', author: 'Patrícia Ramos', date: '19/08/2026', rating: '★★★★★', comment: 'Adorei a experiência, voltarei a pedir.' },
+  { id: '17', author: 'Rodrigo Azevedo', date: '14/08/2026', rating: '★★★☆☆', comment: 'Estava bom, mas faltou um pouco mais de capricho.' },
+  { id: '18', author: 'Vanessa Nogueira', date: '10/08/2026', rating: '★★★★★', comment: 'Delicioso! Aprovado pela família toda.' },
+  { id: '19', author: 'Diego Farias', date: '05/08/2026', rating: '★★★★★', comment: 'Excelente custo-benefício.' },
+  { id: '20', author: 'Renata Freitas', date: '01/08/2026', rating: '★★★★☆', comment: 'Muito gostoso, recomendo.' },
+  { id: '21', author: 'Eduardo Moreira', date: '28/07/2026', rating: '★★★★★', comment: 'Perfeito em todos os sentidos.' },
+  { id: '22', author: 'Tatiane Cardoso', date: '24/07/2026', rating: '★★★★★', comment: 'Nota 10 para o sabor e rapidez.' },
+  { id: '23', author: 'Felipe Castro', date: '20/07/2026', rating: '★★★★☆', comment: 'Muito bom, recomendo com certeza.' },
+  { id: '24', author: 'Jéssica Correia', date: '15/07/2026', rating: '★★★★★', comment: 'Maravilhoso! Sabor inigualável.' },
+  { id: '25', author: 'Alexandre Pinto', date: '10/07/2026', rating: '★★★★★', comment: 'Excelente qualidade.' },
+  { id: '26', author: 'Priscila Cavalcanti', date: '05/07/2026', rating: '★★★★☆', comment: 'Muito bom, entrega rápida.' },
+  { id: '27', author: 'Gustavo Lima', date: '01/07/2026', rating: '★★★★★', comment: 'Sensacional, com certeza pedirei mais vezes.' },
+  { id: '28', author: 'Amanda Souza', date: '28/06/2026', rating: '★★★★★', comment: 'Simplesmente maravilhoso.' },
+  { id: '29', author: 'Leonardo Silveira', date: '24/06/2026', rating: '★★★★☆', comment: 'Ótimo lanche, recomendo.' },
+  { id: '30', author: 'Letícia Moraes', date: '20/06/2026', rating: '★★★★★', comment: 'Perfeito! Adorei cada detalhe.' },
+];
+
 export default function RestaurantDetailScreen({
   restaurant,
   onBack,
@@ -68,13 +100,24 @@ export default function RestaurantDetailScreen({
 }) {
   const [activeTab, setActiveTab] = useState('cardapio');
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
   const menuItems = menuByRestaurant[restaurant.id] || menuByRestaurant['burger-house'];
   const highlights = menuItems.slice(0, 2);
 
   const addItem = (item) => {
     onAddToCart?.(item);
-    Alert.alert('Item adicionado', `${item.title} foi adicionado ao carrinho.`);
+    setShowPopup(true);
   };
+
+  useEffect(() => {
+    if (showPopup) {
+      const timer = setTimeout(() => {
+        setShowPopup(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showPopup]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -96,7 +139,11 @@ export default function RestaurantDetailScreen({
             accessibilityRole="button"
             accessibilityLabel="Voltar para restaurantes"
           >
-            <Text style={styles.backIcon}>‹</Text>
+            <Image
+              source={require('./assets/left.png')}
+              style={styles.iconImage}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.floatingButtonRight}
@@ -108,9 +155,15 @@ export default function RestaurantDetailScreen({
             }
             accessibilityState={{ selected: isFavorite }}
           >
-            <Text style={[styles.favoriteIcon, isFavorite && styles.favoriteActive]}>
-              {isFavorite ? '♥' : '♡'}
-            </Text>
+            <Image
+              source={
+                isFavorite
+                  ? require('./assets/heart 8.png')
+                  : require('./assets/heart 7.png')
+              }
+              style={styles.iconImage}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
         </View>
 
@@ -256,16 +309,25 @@ export default function RestaurantDetailScreen({
             <Text style={styles.reviewCount}>
               {restaurant.reviews} avaliações de clientes
             </Text>
-            <View style={styles.reviewCard}>
-              <Text style={styles.reviewStars}>★★★★★</Text>
-              <Text style={styles.reviewQuote}>
-                Ótima opção! Pedido saboroso e entrega dentro do prazo.
-              </Text>
-              <Text style={styles.reviewAuthor}>Avaliação de cliente</Text>
-            </View>
+            {reviewsList.map((rev) => (
+              <View key={rev.id} style={styles.reviewCard}>
+                <View style={styles.reviewHeader}>
+                  <Text style={styles.reviewAuthor}>{rev.author}</Text>
+                  <Text style={styles.reviewDate}>{rev.date}</Text>
+                </View>
+                <Text style={styles.reviewStars}>{rev.rating}</Text>
+                <Text style={styles.reviewQuote}>{rev.comment}</Text>
+              </View>
+            ))}
           </View>
         )}
       </ScrollView>
+
+      {showPopup && (
+        <View style={styles.popupContainer}>
+          <Text style={styles.popupText}>Item adicionado ao carrinho!</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -289,11 +351,11 @@ const styles = StyleSheet.create({
   },
   floatingButtonLeft: {
     position: 'absolute',
-    top: 16,
+    top: 35,
     left: 16,
-    width: 34,
-    height: 34,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -301,28 +363,19 @@ const styles = StyleSheet.create({
   },
   floatingButtonRight: {
     position: 'absolute',
-    top: 16,
+    top: 35,
     right: 16,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
   },
-  backIcon: {
-    color: '#222',
-    fontSize: 36,
-    lineHeight: 40,
-    marginTop: -4,
-  },
-  favoriteIcon: {
-    color: '#555',
-    fontSize: 26,
-  },
-  favoriteActive: {
-    color: '#FF3B30',
+  iconImage: {
+    width: 22,
+    height: 22,
   },
   restaurantInfoContainer: {
     paddingHorizontal: 16,
@@ -558,20 +611,47 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
     borderRadius: 12,
     padding: 16,
+    marginBottom: 12,
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  reviewAuthor: {
+    fontWeight: 'bold',
+    fontSize: 14,
+    color: '#000',
+  },
+  reviewDate: {
+    color: '#888',
+    fontSize: 12,
   },
   reviewStars: {
     color: '#DAA520',
-    fontSize: 16,
+    fontSize: 14,
+    marginTop: 4,
   },
   reviewQuote: {
     fontSize: 14,
     color: '#333',
-    marginTop: 8,
+    marginTop: 6,
     lineHeight: 20,
   },
-  reviewAuthor: {
-    color: '#777',
-    fontSize: 12,
-    marginTop: 8,
+  popupContainer: {
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 24,
+    elevation: 6,
+    zIndex: 999,
+  },
+  popupText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

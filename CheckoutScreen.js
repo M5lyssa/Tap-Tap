@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -9,62 +10,66 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-const paymentMethods = [
-  { id: 'pix', name: 'Pix', icon: 'qrcode', type: 'material' },
-  { id: 'credit', name: 'Cartão de crédito', icon: 'card-outline', type: 'ion' },
-  { id: 'debit', name: 'Cartão de débito', icon: 'card-outline', type: 'ion' },
-  { id: 'cash', name: 'Dinheiro', icon: 'cash-outline', type: 'ion' },
-];
-
-const formatCurrency = (value) =>
-  `R$ ${value.toFixed(2).replace('.', ',')}`;
-
-export default function CheckoutScreen({ total, onBack }) {
+export default function CheckoutScreen({ cartTotal = 43.80, onBack, onOrderComplete }) {
   const [selectedPayment, setSelectedPayment] = useState('pix');
   const [coupon, setCoupon] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
 
-  const handleFinishOrder = () => {
-    Alert.alert(
-      'Finalização do pedido',
-      'O envio e a confirmação de pedidos ainda não estão conectados.',
-    );
+  const handleFinalizeOrder = () => {
+    setShowPopup(true);
   };
+
+  // Controla o tempo de exibição do pop-up e redireciona após 2.5 segundos
+  useEffect(() => {
+    if (showPopup) {
+      const timer = setTimeout(() => {
+        setShowPopup(false);
+        onOrderComplete?.(); // Volta para a Home ou limpa o fluxo
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [showPopup, onOrderComplete]);
+
+  const formatCurrency = (value) =>
+    `R$ ${value.toFixed(2).replace('.', ',')}`;
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={onBack}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Voltar ao carrinho"
-        >
-          <Ionicons name="arrow-back" size={24} color="#7A1313" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Finalizar pedidos</Text>
-      </View>
-
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.darkCard}>
-          <View style={styles.addressHeaderRow}>
-            <View style={styles.iconContainer}>
-              <MaterialCommunityIcons
-                name="home-map-marker"
-                size={22}
-                color="#7A1313"
-              />
+        {/* Cabeçalho */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={onBack}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Voltar"
+          >
+            <Image
+              source={require('./assets/left.png')}
+              style={styles.backIconImg}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Finalizar pedidos</Text>
+        </View>
+
+        {/* Endereço de entrega */}
+        <View style={styles.cardSection}>
+          <View style={styles.addressRow}>
+            <Image
+              source={require('./assets/Group 68.png')}
+              style={styles.addressIcon}
+              resizeMode="contain"
+            />
+            <View style={styles.addressInfo}>
+              <Text style={styles.addressTitle}>Endereço de entrega</Text>
+              <Text style={styles.addressSub}>Rua resenha, 123 - Maceió/AL</Text>
             </View>
-            <Text style={styles.darkCardTitle}>Endereço de entrega</Text>
-          </View>
-          <View style={styles.addressDetailsRow}>
-            <Text style={styles.addressText}>Rua resenha, 123 - Maceió/AL</Text>
             <TouchableOpacity
               onPress={() =>
                 Alert.alert(
@@ -79,63 +84,115 @@ export default function CheckoutScreen({ total, onBack }) {
           </View>
         </View>
 
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeaderBox}>
-            <Text style={styles.sectionHeaderTitle}>Forma de pagamento</Text>
-          </View>
-          <View style={styles.paymentList}>
-            {paymentMethods.map((method) => {
-              const isSelected = selectedPayment === method.id;
+        {/* Forma de pagamento */}
+        <View style={styles.paymentCard}>
+          <Text style={styles.sectionCardTitle}>Forma de pagamento</Text>
 
-              return (
-                <TouchableOpacity
-                  key={method.id}
-                  style={[
-                    styles.paymentItem,
-                    isSelected && styles.paymentItemSelected,
-                  ]}
-                  onPress={() => setSelectedPayment(method.id)}
-                  activeOpacity={0.8}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: isSelected }}
-                >
-                  <View style={styles.paymentItemLeft}>
-                    {method.type === 'material' ? (
-                      <MaterialCommunityIcons
-                        name={method.icon}
-                        size={20}
-                        color="#7A1313"
-                      />
-                    ) : (
-                      <Ionicons
-                        name={method.icon}
-                        size={20}
-                        color="#7A1313"
-                      />
-                    )}
-                    <Text style={styles.paymentText}>{method.name}</Text>
-                  </View>
-                  {isSelected && (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={22}
-                      color="#7A1313"
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          {/* Pix */}
+          <TouchableOpacity
+            style={styles.paymentOption}
+            onPress={() => setSelectedPayment('pix')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.paymentLeft}>
+              <Image
+                source={require('./assets/Group 72.png')}
+                style={styles.paymentIcon}
+                resizeMode="contain"
+              />
+              <Text style={styles.paymentText}>Pix</Text>
+            </View>
+            <Image
+              source={require('./assets/grommet-icons_status-good.png')}
+              style={[
+                styles.radioIcon,
+                selectedPayment === 'pix' && styles.radioSelected,
+              ]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+
+          {/* Cartão de crédito */}
+          <TouchableOpacity
+            style={styles.paymentOption}
+            onPress={() => setSelectedPayment('credit')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.paymentLeft}>
+              <Image
+                source={require('./assets/pepicons-pop_credit-card-circle.png')}
+                style={styles.paymentIcon}
+                resizeMode="contain"
+              />
+              <Text style={styles.paymentText}>Cartão de crédito</Text>
+            </View>
+            <Image
+              source={require('./assets/grommet-icons_status-good.png')}
+              style={[
+                styles.radioIcon,
+                selectedPayment === 'credit' && styles.radioSelected,
+              ]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+
+          {/* Cartão de débito */}
+          <TouchableOpacity
+            style={styles.paymentOption}
+            onPress={() => setSelectedPayment('debit')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.paymentLeft}>
+              <Image
+                source={require('./assets/pepicons-pop_credit-card-circle.png')}
+                style={styles.paymentIcon}
+                resizeMode="contain"
+              />
+              <Text style={styles.paymentText}>Cartão de débito</Text>
+            </View>
+            <Image
+              source={require('./assets/grommet-icons_status-good.png')}
+              style={[
+                styles.radioIcon,
+                selectedPayment === 'debit' && styles.radioSelected,
+              ]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+
+          {/* Dinheiro */}
+          <TouchableOpacity
+            style={[styles.paymentOption, styles.lastPaymentOption]}
+            onPress={() => setSelectedPayment('cash')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.paymentLeft}>
+              <Image
+                source={require('./assets/f7_money-dollar-circle.png')}
+                style={styles.paymentIcon}
+                resizeMode="contain"
+              />
+              <Text style={styles.paymentText}>Dinheiro</Text>
+            </View>
+            <Image
+              source={require('./assets/grommet-icons_status-good.png')}
+              style={[
+                styles.radioIcon,
+                selectedPayment === 'cash' && styles.radioSelected,
+              ]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.darkCard}>
-          <Text style={styles.darkCardTitle}>Cupom de desconto</Text>
-          <View style={styles.couponContainer}>
-            <MaterialCommunityIcons
-              name="ticket-percent-outline"
-              size={20}
-              color="#7A1313"
+        {/* Cupom de desconto */}
+        <View style={styles.couponCard}>
+          <Text style={styles.sectionCardTitle}>Cupom de desconto</Text>
+          <View style={styles.couponInputWrapper}>
+            <Image
+              source={require('./assets/Group.png')}
               style={styles.couponIcon}
+              resizeMode="contain"
             />
             <TextInput
               style={styles.couponInput}
@@ -143,26 +200,33 @@ export default function CheckoutScreen({ total, onBack }) {
               placeholderTextColor="#888"
               value={coupon}
               onChangeText={setCoupon}
-              autoCapitalize="characters"
-              accessibilityLabel="Inserir cupom de desconto"
             />
           </View>
         </View>
 
-        <View style={styles.totalSection}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
-        </View>
+        {/* Total e Botão Finalizar */}
+        <View style={styles.footerSummary}>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.totalValue}>{formatCurrency(cartTotal)}</Text>
+          </View>
 
-        <TouchableOpacity
-          style={styles.finishButton}
-          onPress={handleFinishOrder}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-        >
-          <Text style={styles.finishButtonText}>Finalizar pedido</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.finalizeButton}
+            onPress={handleFinalizeOrder}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.finalizeButtonText}>Finalizar pedido</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
+
+      {/* Pop-up rápido de confirmação */}
+      {showPopup && (
+        <View style={styles.popupContainer}>
+          <Text style={styles.popupText}>Pedido concluído com sucesso!</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -172,147 +236,153 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FAFAFA',
   },
+  scrollContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 40,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FAFAFA',
+    marginTop: 20,
+    marginBottom: 20,
   },
   backButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#F0F0F0',
+    width: 36,
+    height: 36,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
+  backIconImg: {
+    width: 36,
+    height: 36,
+  },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#7A1313',
   },
-  scrollContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 40,
-  },
-  darkCard: {
+  cardSection: {
     backgroundColor: '#7A1313',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
     elevation: 3,
   },
-  addressHeaderRow: {
+  addressRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
   },
-  iconContainer: {
+  addressIcon: {
     width: 32,
     height: 32,
-    borderRadius: 8,
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
-  darkCardTitle: {
-    fontSize: 18,
+  addressInfo: {
+    flex: 1,
+  },
+  addressTitle: {
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#FFF',
+    marginBottom: 2,
   },
-  addressDetailsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingLeft: 42,
-  },
-  addressText: {
-    fontSize: 14,
-    color: '#FFF',
-    flex: 1,
+  addressSub: {
+    fontSize: 12,
+    color: '#E0E0E0',
   },
   changeText: {
     fontSize: 14,
-    color: '#FFF',
     fontWeight: 'bold',
-    textDecorationLine: 'underline',
+    color: '#FFF',
   },
-  sectionContainer: {
+  paymentCard: {
     backgroundColor: '#7A1313',
     borderRadius: 16,
-    overflow: 'hidden',
+    paddingTop: 16,
+    paddingHorizontal: 16,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
     elevation: 3,
   },
-  sectionHeaderBox: {
-    padding: 16,
-  },
-  sectionHeaderTitle: {
-    fontSize: 18,
+  sectionCardTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#FFF',
+    marginBottom: 12,
   },
-  paymentList: {
-    backgroundColor: '#FFF',
-  },
-  paymentItem: {
+  paymentOption: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    backgroundColor: '#FFF',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    marginBottom: 10,
   },
-  paymentItemSelected: {
-    backgroundColor: '#FFF5F5',
+  lastPaymentOption: {
+    marginBottom: 16,
   },
-  paymentItemLeft: {
+  paymentLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  paymentIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 12,
   },
   paymentText: {
-    fontSize: 15,
-    color: '#7A1313',
-    fontWeight: 'bold',
-    marginLeft: 12,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000',
   },
-  couponContainer: {
+  radioIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#CCC',
+  },
+  radioSelected: {
+    tintColor: '#7A1313',
+  },
+  couponCard: {
+    backgroundColor: '#7A1313',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    elevation: 3,
+  },
+  couponInputWrapper: {
     flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#FFF',
     borderRadius: 10,
-    height: 44,
-    alignItems: 'center',
     paddingHorizontal: 12,
-    marginTop: 10,
+    height: 46,
   },
   couponIcon: {
-    marginRight: 8,
+    width: 20,
+    height: 20,
+    marginRight: 10,
   },
   couponInput: {
     flex: 1,
     fontSize: 14,
     color: '#000',
   },
-  totalSection: {
+  footerSummary: {
+    marginTop: 8,
+  },
+  totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 10,
+    marginBottom: 16,
     paddingHorizontal: 4,
   },
   totalLabel: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#000',
   },
@@ -321,21 +391,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  finishButton: {
+  finalizeButton: {
     backgroundColor: '#7A1313',
-    paddingVertical: 16,
     borderRadius: 16,
+    paddingVertical: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
     elevation: 4,
   },
-  finishButtonText: {
+  finalizeButtonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  popupContainer: {
+    position: 'absolute',
+    top: '45%',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.88)',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderRadius: 30,
+    elevation: 10,
+    zIndex: 999,
+  },
+  popupText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

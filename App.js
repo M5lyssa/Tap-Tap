@@ -196,8 +196,13 @@ export default function App() {
     return (
       <TapEffects>
         <CheckoutScreen
-          total={total}
+          cartTotal={total}
           onBack={() => setCurrentScreen('cart')}
+          onOrderComplete={() => {
+            setCartItems([]);
+            setHomeTab('home');
+            setCurrentScreen('home');
+          }}
         />
       </TapEffects>
     );

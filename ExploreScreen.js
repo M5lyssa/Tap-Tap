@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { categories, restaurants } from './Home';
+import { categories, restaurants } from './catalog';
 
 const tabs = [
   { id: 'home', label: 'Início', image: require('./assets/home.png') },
