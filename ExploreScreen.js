@@ -18,9 +18,16 @@ const tabs = [
   { id: 'profile', label: 'Perfil', image: require('./assets/perfil(2).png') },
 ];
 
-export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
+export default function ExploreScreen({
+  onTabSelect,
+  onRestaurantSelect,
+  isDarkMode = false,
+  fontSizeScale = 1.0,
+}) {
   const [activeCategory, setActiveCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const theme = isDarkMode ? darkTheme : lightTheme;
 
   const filteredRestaurants = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase('pt-BR');
@@ -39,22 +46,26 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
   }, [activeCategory, searchQuery]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.title}>Explorar</Text>
-        <Text style={styles.subtitle}>Encontre seu próximo pedido</Text>
+        <Text style={[styles.title, { color: theme.titleColor, fontSize: 26 * fontSizeScale }]}>
+          Explorar
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.subText, fontSize: 14 * fontSizeScale }]}>
+          Encontre seu próximo pedido
+        </Text>
 
-        <View style={styles.searchContainer}>
+        <View style={[styles.searchContainer, { backgroundColor: theme.searchBg, borderColor: theme.searchBorder }]}>
           <View style={styles.searchIcon}>
-            <View style={styles.searchIconCircle} />
-            <View style={styles.searchIconHandle} />
+            <View style={[styles.searchIconCircle, { borderColor: theme.searchIconColor }]} />
+            <View style={[styles.searchIconHandle, { backgroundColor: theme.searchIconColor }]} />
           </View>
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: theme.text, fontSize: 14 * fontSizeScale }]}
             placeholder="Buscar restaurantes..."
             placeholderTextColor="#888"
             value={searchQuery}
@@ -64,7 +75,9 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
           />
         </View>
 
-        <Text style={styles.sectionTitle}>Categorias</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>
+          Categorias
+        </Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -73,7 +86,11 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
           <TouchableOpacity
             style={[
               styles.categoryItem,
-              activeCategory === null && styles.categoryItemSelected,
+              { backgroundColor: theme.cardBg, borderColor: theme.border },
+              activeCategory === null && {
+                borderColor: theme.selectedCategoryBorder,
+                backgroundColor: theme.selectedCategoryBg,
+              },
             ]}
             onPress={() => setActiveCategory(null)}
             accessibilityRole="button"
@@ -82,12 +99,17 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
             <Text
               style={[
                 styles.allCategoriesText,
-                activeCategory === null && styles.categoryNameSelected,
+                { color: theme.subText, fontSize: 13 * fontSizeScale },
+                activeCategory === null && {
+                  color: theme.selectedCategoryText,
+                  fontWeight: '700',
+                },
               ]}
             >
               Todos
             </Text>
           </TouchableOpacity>
+
           {categories.map((category) => {
             const isSelected = activeCategory === category.id;
 
@@ -96,7 +118,11 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
                 key={category.id}
                 style={[
                   styles.categoryItem,
-                  isSelected && styles.categoryItemSelected,
+                  { backgroundColor: theme.cardBg, borderColor: theme.border },
+                  isSelected && {
+                    borderColor: theme.selectedCategoryBorder,
+                    backgroundColor: theme.selectedCategoryBg,
+                  },
                 ]}
                 onPress={() =>
                   setActiveCategory(isSelected ? null : category.id)
@@ -112,7 +138,11 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
                 <Text
                   style={[
                     styles.categoryName,
-                    isSelected && styles.categoryNameSelected,
+                    { color: theme.subText, fontSize: 11 * fontSizeScale },
+                    isSelected && {
+                      color: theme.selectedCategoryText,
+                      fontWeight: '700',
+                    },
                   ]}
                 >
                   {category.name}
@@ -123,8 +153,10 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
         </ScrollView>
 
         <View style={styles.resultsHeader}>
-          <Text style={styles.sectionTitle}>Restaurantes</Text>
-          <Text style={styles.resultCount}>
+          <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>
+            Restaurantes
+          </Text>
+          <Text style={[styles.resultCount, { color: theme.subText, fontSize: 12 * fontSizeScale }]}>
             {filteredRestaurants.length} encontrados
           </Text>
         </View>
@@ -133,7 +165,10 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
           filteredRestaurants.map((restaurant) => (
             <TouchableOpacity
               key={restaurant.id}
-              style={styles.restaurantCard}
+              style={[
+                styles.restaurantCard,
+                { backgroundColor: theme.cardBg, borderColor: theme.border },
+              ]}
               onPress={() => onRestaurantSelect?.(restaurant)}
               activeOpacity={0.85}
               accessibilityRole="button"
@@ -145,78 +180,115 @@ export default function ExploreScreen({ onTabSelect, onRestaurantSelect }) {
                 resizeMode="cover"
               />
               <View style={styles.restaurantInfo}>
-                <Text style={styles.restaurantName}>{restaurant.name}</Text>
-                <Text style={styles.restaurantCategory}>
+                <Text style={[styles.restaurantName, { color: theme.restaurantTitle, fontSize: 16 * fontSizeScale }]}>
+                  {restaurant.name}
+                </Text>
+                <Text style={[styles.restaurantCategory, { color: theme.subText, fontSize: 13 * fontSizeScale }]}>
                   {restaurant.category}
                 </Text>
                 <View style={styles.detailsRow}>
                   <Text style={styles.starIcon}>★</Text>
-                  <Text style={styles.detailText}>
+                  <Text style={[styles.detailText, { color: theme.subText, fontSize: 12 * fontSizeScale }]}>
                     {restaurant.rating} {restaurant.reviews}
                   </Text>
-                  <Text style={styles.timeText}>{restaurant.time}</Text>
+                  <Text style={[styles.timeText, { color: theme.subText, fontSize: 11 * fontSizeScale }]}>
+                    {restaurant.time}
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={styles.emptyState}>
+          <Text style={[styles.emptyState, { color: theme.subText, fontSize: 14 * fontSizeScale }]}>
             Nenhum restaurante encontrado.
           </Text>
         )}
       </ScrollView>
 
-      <View style={styles.bottomTabBar}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab.id}
-            style={[
-              styles.tabButton,
-              tab.id === 'explore' && styles.activeTabButton,
-            ]}
-            onPress={() => {
-              onTabSelect?.(tab.id);
-            }}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={tab.label}
-            accessibilityState={{ selected: tab.id === 'explore' }}
-          >
-            <Image source={tab.image} style={styles.tabIcon} resizeMode="contain" />
-          </TouchableOpacity>
-        ))}
+      <View style={[styles.bottomTabBar, { backgroundColor: theme.tabBarBg, borderTopColor: theme.tabBarBorder }]}>
+        {tabs.map((tab) => {
+          const isActive = tab.id === 'explore';
+
+          return (
+            <TouchableOpacity
+              key={tab.id}
+              style={[
+                styles.tabButton,
+                isActive && styles.activeTabButton,
+              ]}
+              onPress={() => {
+                onTabSelect?.(tab.id);
+              }}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={tab.label}
+              accessibilityState={{ selected: isActive }}
+            >
+              <Image source={tab.image} style={styles.tabIcon} resizeMode="contain" />
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </SafeAreaView>
   );
 }
 
+const lightTheme = {
+  background: '#FAFAFA',
+  cardBg: '#FFF',
+  border: '#EEE',
+  titleColor: '#7A1313',
+  subText: '#666',
+  searchBg: '#FFF',
+  searchBorder: '#8B0000',
+  searchIconColor: '#8B0000',
+  text: '#111',
+  restaurantTitle: '#111',
+  selectedCategoryBorder: '#7A1313',
+  selectedCategoryBg: '#FFF3F3',
+  selectedCategoryText: '#7A1313',
+  tabBarBg: '#7A1313',
+  tabBarBorder: '#5A0D0D',
+};
+
+const darkTheme = {
+  background: '#121212',
+  cardBg: '#1E1E1E',
+  border: '#333333',
+  titleColor: '#FFFFFF',
+  subText: '#AAAAAA',
+  searchBg: '#1E1E1E',
+  searchBorder: '#A56868',
+  searchIconColor: '#FFF',
+  text: '#FFFFFF',
+  restaurantTitle: '#E06B6B',
+  selectedCategoryBorder: '#A56868',
+  selectedCategoryBg: '#2A1A1A',
+  selectedCategoryText: '#E06B6B',
+  tabBarBg: '#1E1E1E',
+  tabBarBorder: '#333333',
+};
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   scrollContent: {
     paddingHorizontal: 16,
-    paddingTop: 18,
+    paddingTop: 28, // Ajustado para afastar da barra de status superior
     paddingBottom: 90,
   },
   title: {
-    color: '#7A1313',
-    fontSize: 26,
     fontWeight: 'bold',
   },
   subtitle: {
-    color: '#666',
-    fontSize: 14,
     marginTop: 4,
     marginBottom: 18,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
     borderWidth: 1,
-    borderColor: '#8B0000',
     borderRadius: 30,
     height: 48,
     paddingHorizontal: 16,
@@ -232,7 +304,6 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderWidth: 2,
-    borderColor: '#8B0000',
     borderRadius: 8,
   },
   searchIconHandle: {
@@ -241,17 +312,12 @@ const styles = StyleSheet.create({
     height: 2,
     right: -5,
     bottom: 0,
-    backgroundColor: '#8B0000',
     transform: [{ rotate: '45deg' }],
   },
   searchInput: {
     flex: 1,
-    color: '#222',
-    fontSize: 14,
   },
   sectionTitle: {
-    color: '#111',
-    fontSize: 18,
     fontWeight: 'bold',
   },
   categoriesRow: {
@@ -263,17 +329,11 @@ const styles = StyleSheet.create({
     minHeight: 76,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFF',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#EEE',
     marginRight: 10,
     paddingHorizontal: 9,
     paddingVertical: 8,
-  },
-  categoryItemSelected: {
-    borderColor: '#7A1313',
-    backgroundColor: '#FFF3F3',
   },
   categoryIcon: {
     width: 34,
@@ -281,18 +341,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   categoryName: {
-    color: '#555',
-    fontSize: 11,
     textAlign: 'center',
   },
-  categoryNameSelected: {
-    color: '#7A1313',
-    fontWeight: '700',
-  },
-  allCategoriesText: {
-    color: '#555',
-    fontSize: 13,
-  },
+  allCategoriesText: {},
   resultsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -300,19 +351,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 12,
   },
-  resultCount: {
-    color: '#777',
-    fontSize: 12,
-  },
+  resultCount: {},
   restaurantCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
     borderRadius: 14,
     padding: 10,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#EEE',
     elevation: 1,
   },
   restaurantImage: {
@@ -325,13 +371,9 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   restaurantName: {
-    color: '#111',
-    fontSize: 16,
     fontWeight: 'bold',
   },
   restaurantCategory: {
-    color: '#666',
-    fontSize: 13,
     marginTop: 3,
   },
   detailsRow: {
@@ -344,18 +386,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginRight: 4,
   },
-  detailText: {
-    color: '#555',
-    fontSize: 12,
-  },
+  detailText: {},
   timeText: {
-    color: '#555',
-    fontSize: 11,
     marginLeft: 'auto',
   },
   emptyState: {
-    color: '#666',
-    fontSize: 14,
     textAlign: 'center',
     paddingVertical: 24,
   },
@@ -365,12 +400,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 65,
-    backgroundColor: '#7A1313',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#5A0D0D',
   },
   tabButton: {
     flex: 1,

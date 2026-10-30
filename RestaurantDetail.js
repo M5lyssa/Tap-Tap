@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -16,21 +16,21 @@ const menuByRestaurant = {
       title: 'Combo Supremo Clássico',
       description: 'Hambúrguer bovino, queijo, molho especial e batata crocante.',
       price: 'R$ 46,99',
-      image: require('./assets/combão.png'),
+      image: require('./assets/burger3.jpg'),
     },
     {
       id: 'chicken',
-      title: 'Mega Chicken & Shake',
-      description: 'Frango crocante com queijo, acompanhado de bebida.',
+      title: 'House Burger',
+      description: 'Hambúrguer bovino, queijo, molho especial e batata crocante.',
       price: 'R$ 52,99',
-      image: require('./assets/combão.png'),
+      image: require('./assets/burger1.jpg'),
     },
     {
       id: 'bacon',
       title: 'Combo Brabo da Casa',
       description: 'Hambúrguer com bacon, queijo derretido e molho da casa.',
       price: 'R$ 49,99',
-      image: require('./assets/combão.png'),
+      image: require('./assets/burger4.jpg'),
     },
   ],
   'pizza-house': [
@@ -39,21 +39,113 @@ const menuByRestaurant = {
       title: 'Combo Margherita',
       description: 'Pizza com molho de tomate, queijo e manjericão.',
       price: 'R$ 39,99',
-      image: require('./assets/pizza.png'),
+      image: require('./assets/margherita.jpg'),
     },
     {
       id: 'calabresa',
       title: 'Combo Calabresa',
       description: 'Pizza de calabresa com queijo e cebola.',
       price: 'R$ 44,99',
-      image: require('./assets/pizza.png'),
+      image: require('./assets/calabresa.jpg'),
     },
     {
       id: 'family',
       title: 'Combo Família',
       description: 'Pizza grande para compartilhar com quem você gosta.',
       price: 'R$ 59,99',
-      image: require('./assets/pizza.png'),
+      image: require('./assets/familia.jpg'),
+    },
+  ],
+  'acai-house': [
+    {
+      id: 'acai-copo-300ml',
+      title: 'Açaí Tradicional 300ml',
+      description: 'Copo ideal para um lanche rápido',
+      price: 'R$ 18,90',
+      image: require('./assets/acai3.jpg'),
+    },
+    {
+      id: 'acai-copo-500ml',
+      title: 'Açaí Especial 500ml',
+      description: 'O tamanho perfeito!',
+      price: 'R$ 24,90',
+      image: require('./assets/acai2.jpg'),
+    },
+    {
+      id: 'acai-copo-700ml',
+      title: 'Açaí Supremo 700ml',
+      description: 'Para quem tem muita fome!',
+      price: 'R$ 32,00',
+      image: require('./assets/acai1.jpg'),
+    },
+  ],
+  'feijoada-house': [
+    {
+      id: 'feijoada1',
+      title: 'Feijoada Individual',
+      description: 'Uma porção individual de feijoada servida em tigela rústica, com arroz branco, couve refogada, farofa e fatias de laranja.',
+      price: 'R$ 45,00',
+      image: require('./assets/feijoada1.jpg'),
+    },
+    {
+      id: 'feijoada2',
+      title: 'Feijoada para 2 pessoas',
+      description: 'Travessas centrais de partilha com arroz, farofa, couve e laranjas fatiadas.',
+      price: 'R$ 80,00',
+      image: require('./assets/feijoada2.jpg'),
+    },
+    {
+      id: 'feijoada3',
+      title: 'Feijoada para 3 pessoas',
+      description: 'Porções generosas para satisfazer três apetites.',
+      price: 'R$ 110,00',
+      image: require('./assets/feijoada3.jpg'),
+    },
+  ],
+  'sushi-house': [
+    {
+      id: 'combo1',
+      title: 'Combo Box (6 peças)',
+      description: 'Combinado com 6 peças: 2 Uramaki Filadélfia...',
+      price: 'R$ 25,00',
+      image: require('./assets/combo3.jpg'),
+    },
+    {
+      id: 'combo2',
+      title: 'Box Magnífico (20 peças)',
+      description: 'Esse combinado vai te surpreender!',
+      price: 'R$ 55,00',
+      image: require('./assets/combo2.jpg'),
+    },
+    {
+      id: 'combo3',
+      title: 'Combo Especial',
+      description: 'Combinado com 28 Peças: 5 Hossomaki...',
+      price: 'R$ 68,90',
+      image: require('./assets/combo1.jpg'),
+    },
+  ],
+  'emporio-bebidas': [
+    {
+      id: 'cerveja',
+      title: 'Cerveja',
+      description: 'Bebida gelada para acompanhar.',
+      price: 'R$ 12,00',
+      image: require('./assets/cerveja.jpg'),
+    },
+    {
+      id: 'vinho',
+      title: 'Vinhos',
+      description: 'Seleção especial de vinhos.',
+      price: 'R$ 55,00',
+      image: require('./assets/vinho.jpg'),
+    },
+    {
+      id: 'refrigerante',
+      title: 'Refrigerante',
+      description: 'Lata 350ml.',
+      price: 'R$ 6,50',
+      image: require('./assets/refrigerante.jpg'),
     },
   ],
 };
@@ -69,26 +161,6 @@ const reviewsList = [
   { id: '8', author: 'Juliana Rocha', date: '18/09/2026', rating: '★★★★★', comment: 'Maravilhoso, meu favorito!' },
   { id: '9', author: 'Gabriel Santos', date: '15/09/2026', rating: '★★★★☆', comment: 'Muito saboroso, vale a pena.' },
   { id: '10', author: 'Larissa Ribeiro', date: '10/09/2026', rating: '★★★★★', comment: 'Simplesmente perfeito, nota 10!' },
-  { id: '11', author: 'Rafael Almeida', date: '08/09/2026', rating: '★★★★★', comment: 'Atendimento nota 10 e comida deliciosa.' },
-  { id: '12', author: 'Camila Fernandes', date: '02/09/2026', rating: '★★★★☆', comment: 'Muito bom, recomendo a todos.' },
-  { id: '13', author: 'Bruno Carvalho', date: '30/08/2026', rating: '★★★★★', comment: 'Melhor hambúrguer que já comi.' },
-  { id: '14', author: 'Mariana Dias', date: '27/08/2026', rating: '★★★★★', comment: 'Tudo muito fresco e saboroso.' },
-  { id: '15', author: 'Thiago Mendes', date: '22/08/2026', rating: '★★★★☆', comment: 'Chegou no horário combinado, recomendo.' },
-  { id: '16', author: 'Patrícia Ramos', date: '19/08/2026', rating: '★★★★★', comment: 'Adorei a experiência, voltarei a pedir.' },
-  { id: '17', author: 'Rodrigo Azevedo', date: '14/08/2026', rating: '★★★☆☆', comment: 'Estava bom, mas faltou um pouco mais de capricho.' },
-  { id: '18', author: 'Vanessa Nogueira', date: '10/08/2026', rating: '★★★★★', comment: 'Delicioso! Aprovado pela família toda.' },
-  { id: '19', author: 'Diego Farias', date: '05/08/2026', rating: '★★★★★', comment: 'Excelente custo-benefício.' },
-  { id: '20', author: 'Renata Freitas', date: '01/08/2026', rating: '★★★★☆', comment: 'Muito gostoso, recomendo.' },
-  { id: '21', author: 'Eduardo Moreira', date: '28/07/2026', rating: '★★★★★', comment: 'Perfeito em todos os sentidos.' },
-  { id: '22', author: 'Tatiane Cardoso', date: '24/07/2026', rating: '★★★★★', comment: 'Nota 10 para o sabor e rapidez.' },
-  { id: '23', author: 'Felipe Castro', date: '20/07/2026', rating: '★★★★☆', comment: 'Muito bom, recomendo com certeza.' },
-  { id: '24', author: 'Jéssica Correia', date: '15/07/2026', rating: '★★★★★', comment: 'Maravilhoso! Sabor inigualável.' },
-  { id: '25', author: 'Alexandre Pinto', date: '10/07/2026', rating: '★★★★★', comment: 'Excelente qualidade.' },
-  { id: '26', author: 'Priscila Cavalcanti', date: '05/07/2026', rating: '★★★★☆', comment: 'Muito bom, entrega rápida.' },
-  { id: '27', author: 'Gustavo Lima', date: '01/07/2026', rating: '★★★★★', comment: 'Sensacional, com certeza pedirei mais vezes.' },
-  { id: '28', author: 'Amanda Souza', date: '28/06/2026', rating: '★★★★★', comment: 'Simplesmente maravilhoso.' },
-  { id: '29', author: 'Leonardo Silveira', date: '24/06/2026', rating: '★★★★☆', comment: 'Ótimo lanche, recomendo.' },
-  { id: '30', author: 'Letícia Moraes', date: '20/06/2026', rating: '★★★★★', comment: 'Perfeito! Adorei cada detalhe.' },
 ];
 
 export default function RestaurantDetailScreen({
@@ -99,10 +171,13 @@ export default function RestaurantDetailScreen({
   onAddToCart,
   isFavorite = false,
   onToggleFavorite,
+  isDarkMode,
+  fontSizeScale = 1.0,
 }) {
   const [activeTab, setActiveTab] = useState('cardapio');
   const [showPopup, setShowPopup] = useState(false);
 
+  const theme = isDarkMode ? darkTheme : lightTheme;
   const menuItems = menuByRestaurant[restaurant.id] || menuByRestaurant['burger-house'];
   const highlights = menuItems.slice(0, 2);
 
@@ -121,7 +196,7 @@ export default function RestaurantDetailScreen({
   }, [showPopup]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -134,7 +209,7 @@ export default function RestaurantDetailScreen({
             accessibilityLabel={`Imagem de ${restaurant.name}`}
           />
           <TouchableOpacity
-            style={styles.floatingButtonLeft}
+            style={[styles.floatingButtonLeft, { backgroundColor: theme.cardBg }]}
             onPress={onBack}
             activeOpacity={0.8}
             accessibilityRole="button"
@@ -142,12 +217,12 @@ export default function RestaurantDetailScreen({
           >
             <Image
               source={require('./assets/left.png')}
-              style={styles.iconImage}
+              style={[styles.iconImage, isDarkMode && { tintColor: '#FFF' }]}
               resizeMode="contain"
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.floatingButtonRight}
+            style={[styles.floatingButtonRight, { backgroundColor: theme.cardBg }]}
             onPress={onToggleFavorite}
             activeOpacity={0.8}
             accessibilityRole="button"
@@ -168,34 +243,42 @@ export default function RestaurantDetailScreen({
           </TouchableOpacity>
         </View>
 
-        <View style={styles.restaurantInfoContainer}>
-          <Text style={styles.restaurantName}>{restaurant.name}</Text>
-          <Text style={styles.restaurantCategory}>{restaurant.category}</Text>
+        <View style={[styles.restaurantInfoContainer, { backgroundColor: theme.cardBg }]}>
+          <Text style={[styles.restaurantName, { color: theme.text, fontSize: 24 * fontSizeScale }]}>
+            {restaurant.name}
+          </Text>
+          <Text style={[styles.restaurantCategory, { color: theme.subText, fontSize: 14 * fontSizeScale }]}>
+            {restaurant.category}
+          </Text>
 
           <View style={styles.ratingRow}>
             <Text style={styles.starIcon}>★</Text>
-            <Text style={styles.ratingText}>{restaurant.rating}</Text>
-            <Text style={styles.reviewsText}>
+            <Text style={[styles.ratingText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
+              {restaurant.rating}
+            </Text>
+            <Text style={[styles.reviewsText, { color: theme.subText, fontSize: 13 * fontSizeScale }]}>
               {restaurant.reviews} avaliações
             </Text>
-            <Text style={styles.deliveryTime}>{restaurant.time}</Text>
+            <Text style={[styles.deliveryTime, { color: theme.subText, fontSize: 13 * fontSizeScale }]}>
+              {restaurant.time}
+            </Text>
           </View>
 
           <TouchableOpacity
-            style={styles.cartButton}
+            style={[styles.cartButton, { backgroundColor: theme.cartBtnBg, borderColor: theme.cartBtnBorder }]}
             onPress={onOpenCart}
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel={`Abrir carrinho com ${cartCount} itens`}
           >
             <Text style={styles.cartButtonIcon}>🛒</Text>
-            <Text style={styles.cartButtonText}>
+            <Text style={[styles.cartButtonText, { color: theme.cartBtnText, fontSize: 14 * fontSizeScale }]}>
               Ver carrinho ({cartCount})
             </Text>
-            <Text style={styles.cartButtonArrow}>›</Text>
+            <Text style={[styles.cartButtonArrow, { color: theme.cartBtnText }]}>›</Text>
           </TouchableOpacity>
 
-          <View style={styles.tabsContainer}>
+          <View style={[styles.tabsContainer, { borderBottomColor: theme.border }]}>
             <TouchableOpacity
               style={[styles.tabItem, activeTab === 'cardapio' && styles.activeTabItem]}
               onPress={() => setActiveTab('cardapio')}
@@ -203,7 +286,11 @@ export default function RestaurantDetailScreen({
               accessibilityState={{ selected: activeTab === 'cardapio' }}
             >
               <Text
-                style={[styles.tabText, activeTab === 'cardapio' && styles.activeTabText]}
+                style={[
+                  styles.tabText,
+                  { fontSize: 15 * fontSizeScale },
+                  activeTab === 'cardapio' && styles.activeTabText,
+                ]}
               >
                 Cardápio
               </Text>
@@ -217,6 +304,7 @@ export default function RestaurantDetailScreen({
               <Text
                 style={[
                   styles.tabText,
+                  { fontSize: 15 * fontSizeScale },
                   activeTab === 'avaliacoes' && styles.activeTabText,
                 ]}
               >
@@ -229,17 +317,19 @@ export default function RestaurantDetailScreen({
         {activeTab === 'cardapio' ? (
           <>
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Destaques</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>
+                Destaques
+              </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.highlightsRow}
               >
                 {highlights.map((item, index) => (
-                  <View key={item.id} style={styles.highlightCard}>
+                  <View key={item.id} style={[styles.highlightCard, { backgroundColor: theme.cardBg, borderColor: theme.border }]}>
                     {index === 0 && (
                       <View style={styles.tagBadge}>
-                        <Text style={styles.tagText}>Mais pedido</Text>
+                        <Text style={[styles.tagText, { fontSize: 10 * fontSizeScale }]}>Mais pedido</Text>
                       </View>
                     )}
                     <Image
@@ -248,10 +338,10 @@ export default function RestaurantDetailScreen({
                       resizeMode="cover"
                     />
                     <View style={styles.highlightContent}>
-                      <Text style={styles.highlightTitle} numberOfLines={1}>
+                      <Text style={[styles.highlightTitle, { color: theme.text, fontSize: 14 * fontSizeScale }]} numberOfLines={1}>
                         {item.title}
                       </Text>
-                      <Text style={styles.highlightPrice}>{item.price}</Text>
+                      <Text style={[styles.highlightPrice, { fontSize: 14 * fontSizeScale }]}>{item.price}</Text>
                     </View>
                     <TouchableOpacity
                       style={styles.highlightAddButton}
@@ -272,23 +362,27 @@ export default function RestaurantDetailScreen({
             </View>
 
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>
+              <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>
                 {restaurant.categoryId === 'pizzas' ? 'Pizzas e combos' : 'Combos'}
               </Text>
               {menuItems.map((item) => (
-                <View key={item.id} style={styles.comboCard}>
+                <View key={item.id} style={[styles.comboCard, { backgroundColor: theme.cardBg, borderColor: theme.border }]}>
                   <Image
                     source={item.image}
                     style={styles.comboImage}
                     resizeMode="cover"
                   />
                   <View style={styles.comboInfo}>
-                    <Text style={styles.comboTitle}>{item.title}</Text>
-                    <Text style={styles.comboDescription} numberOfLines={3}>
+                    <Text style={[styles.comboTitle, { color: theme.text, fontSize: 15 * fontSizeScale }]}>
+                      {item.title}
+                    </Text>
+                    <Text style={[styles.comboDescription, { color: theme.subText, fontSize: 12 * fontSizeScale }]} numberOfLines={3}>
                       {item.description}
                     </Text>
                     <View style={styles.comboFooter}>
-                      <Text style={styles.comboPrice}>{item.price}</Text>
+                      <Text style={[styles.comboPrice, { color: theme.text, fontSize: 15 * fontSizeScale }]}>
+                        {item.price}
+                      </Text>
                       <TouchableOpacity
                         style={styles.addButton}
                         onPress={() => addItem(item)}
@@ -296,7 +390,7 @@ export default function RestaurantDetailScreen({
                         accessibilityRole="button"
                         accessibilityLabel={`Adicionar ${item.title} ao pedido`}
                       >
-                        <Text style={styles.addButtonText}>Adicionar +</Text>
+                        <Text style={[styles.addButtonText, { fontSize: 12 * fontSizeScale }]}>Adicionar +</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -307,17 +401,23 @@ export default function RestaurantDetailScreen({
         ) : (
           <View style={styles.reviewsContainer}>
             <Text style={styles.reviewScore}>{restaurant.rating} ★</Text>
-            <Text style={styles.reviewCount}>
+            <Text style={[styles.reviewCount, { color: theme.subText, fontSize: 13 * fontSizeScale }]}>
               {restaurant.reviews} avaliações de clientes
             </Text>
             {reviewsList.map((rev) => (
-              <View key={rev.id} style={styles.reviewCard}>
+              <View key={rev.id} style={[styles.reviewCard, { backgroundColor: theme.cardBg, borderColor: theme.border }]}>
                 <View style={styles.reviewHeader}>
-                  <Text style={styles.reviewAuthor}>{rev.author}</Text>
-                  <Text style={styles.reviewDate}>{rev.date}</Text>
+                  <Text style={[styles.reviewAuthor, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
+                    {rev.author}
+                  </Text>
+                  <Text style={[styles.reviewDate, { color: theme.subText, fontSize: 12 * fontSizeScale }]}>
+                    {rev.date}
+                  </Text>
                 </View>
                 <Text style={styles.reviewStars}>{rev.rating}</Text>
-                <Text style={styles.reviewQuote}>{rev.comment}</Text>
+                <Text style={[styles.reviewQuote, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
+                  {rev.comment}
+                </Text>
               </View>
             ))}
           </View>
@@ -326,17 +426,38 @@ export default function RestaurantDetailScreen({
 
       {showPopup && (
         <View style={styles.popupContainer}>
-          <Text style={styles.popupText}>Item adicionado ao carrinho!</Text>
+          <Text style={[styles.popupText, { fontSize: 14 * fontSizeScale }]}>Item adicionado ao carrinho!</Text>
         </View>
       )}
     </SafeAreaView>
   );
 }
 
+const lightTheme = {
+  background: '#FAFAFA',
+  cardBg: '#FFF',
+  border: '#E0E0E0',
+  text: '#000',
+  subText: '#666',
+  cartBtnBg: '#FFF5F5',
+  cartBtnBorder: '#E8CACA',
+  cartBtnText: '#7A1313',
+};
+
+const darkTheme = {
+  background: '#121212',
+  cardBg: '#1E1E1E',
+  border: '#333',
+  text: '#FFF',
+  subText: '#AAA',
+  cartBtnBg: '#2A1A1A',
+  cartBtnBorder: '#552222',
+  cartBtnText: '#E06B6B',
+};
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   scrollContainer: {
     paddingBottom: 40,
@@ -357,7 +478,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
@@ -369,7 +489,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
@@ -381,19 +500,14 @@ const styles = StyleSheet.create({
   restaurantInfoContainer: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    backgroundColor: '#FFF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     marginTop: -20,
   },
   restaurantName: {
-    fontSize: 24,
     fontWeight: 'bold',
-    color: '#000',
   },
   restaurantCategory: {
-    fontSize: 14,
-    color: '#666',
     marginTop: 3,
   },
   ratingRow: {
@@ -408,27 +522,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   ratingText: {
-    fontSize: 14,
     fontWeight: 'bold',
-    color: '#000',
     marginLeft: 4,
   },
   reviewsText: {
-    fontSize: 13,
-    color: '#666',
     marginLeft: 5,
   },
   deliveryTime: {
-    fontSize: 13,
-    color: '#555',
     marginLeft: 'auto',
   },
   cartButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF5F5',
     borderWidth: 1,
-    borderColor: '#E8CACA',
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 11,
@@ -440,19 +546,15 @@ const styles = StyleSheet.create({
   },
   cartButtonText: {
     flex: 1,
-    color: '#7A1313',
-    fontSize: 14,
     fontWeight: '600',
   },
   cartButtonArrow: {
-    color: '#7A1313',
     fontSize: 24,
     lineHeight: 24,
   },
   tabsContainer: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
   },
   tabItem: {
     flex: 1,
@@ -464,7 +566,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#B22222',
   },
   tabText: {
-    fontSize: 15,
     color: '#888',
     fontWeight: '500',
   },
@@ -477,9 +578,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   sectionTitle: {
-    fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
     marginBottom: 12,
   },
   highlightsRow: {
@@ -487,10 +586,8 @@ const styles = StyleSheet.create({
   },
   highlightCard: {
     width: 170,
-    backgroundColor: '#FFF',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
     marginRight: 14,
     overflow: 'hidden',
     elevation: 2,
@@ -518,7 +615,6 @@ const styles = StyleSheet.create({
   },
   tagText: {
     color: '#FFF',
-    fontSize: 10,
     fontWeight: 'bold',
   },
   highlightImage: {
@@ -530,22 +626,17 @@ const styles = StyleSheet.create({
     paddingRight: 52,
   },
   highlightTitle: {
-    fontSize: 14,
     fontWeight: 'bold',
-    color: '#000',
     marginBottom: 4,
   },
   highlightPrice: {
-    fontSize: 14,
     fontWeight: 'bold',
     color: '#B22222',
   },
   comboCard: {
     flexDirection: 'row',
-    backgroundColor: '#FFF',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
     marginBottom: 14,
     overflow: 'hidden',
     padding: 10,
@@ -562,13 +653,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   comboTitle: {
-    fontSize: 15,
     fontWeight: 'bold',
-    color: '#000',
   },
   comboDescription: {
-    fontSize: 12,
-    color: '#666',
     marginVertical: 4,
   },
   comboFooter: {
@@ -578,9 +665,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   comboPrice: {
-    fontSize: 15,
     fontWeight: 'bold',
-    color: '#000',
   },
   addButton: {
     backgroundColor: '#B22222',
@@ -590,7 +675,6 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: '#FFF',
-    fontSize: 12,
     fontWeight: 'bold',
   },
   reviewsContainer: {
@@ -602,14 +686,11 @@ const styles = StyleSheet.create({
     color: '#B22222',
   },
   reviewCount: {
-    color: '#666',
     marginTop: 4,
     marginBottom: 16,
   },
   reviewCard: {
-    backgroundColor: '#FFF',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -621,11 +702,8 @@ const styles = StyleSheet.create({
   },
   reviewAuthor: {
     fontWeight: 'bold',
-    fontSize: 14,
-    color: '#000',
   },
   reviewDate: {
-    color: '#888',
     fontSize: 12,
   },
   reviewStars: {
@@ -634,8 +712,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   reviewQuote: {
-    fontSize: 14,
-    color: '#333',
     marginTop: 6,
     lineHeight: 20,
   },
@@ -652,7 +728,6 @@ const styles = StyleSheet.create({
   },
   popupText: {
     color: '#FFF',
-    fontSize: 14,
     fontWeight: 'bold',
   },
 });

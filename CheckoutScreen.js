@@ -17,20 +17,23 @@ export default function CheckoutScreen({
   onBack,
   onChooseCoupon,
   onOrderComplete,
+  isDarkMode = false,
+  fontSizeScale = 1.0,
 }) {
   const [selectedPayment, setSelectedPayment] = useState('pix');
   const [showPopup, setShowPopup] = useState(false);
+
+  const theme = isDarkMode ? darkTheme : lightTheme;
 
   const handleFinalizeOrder = () => {
     setShowPopup(true);
   };
 
-  // Controla o tempo de exibição do pop-up e redireciona após 2.5 segundos
   useEffect(() => {
     if (showPopup) {
       const timer = setTimeout(() => {
         setShowPopup(false);
-        onOrderComplete?.(); // Volta para a Home ou limpa o fluxo
+        onOrderComplete?.();
       }, 2500);
       return () => clearTimeout(timer);
     }
@@ -40,7 +43,7 @@ export default function CheckoutScreen({
     `R$ ${value.toFixed(2).replace('.', ',')}`;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -48,7 +51,7 @@ export default function CheckoutScreen({
         {/* Cabeçalho */}
         <View style={styles.header}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: theme.cardBg, borderColor: theme.border }]}
             onPress={onBack}
             activeOpacity={0.8}
             accessibilityRole="button"
@@ -56,15 +59,17 @@ export default function CheckoutScreen({
           >
             <Image
               source={require('./assets/left.png')}
-              style={styles.backIconImg}
+              style={[styles.backIconImg, isDarkMode && { tintColor: '#FFF' }]}
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Finalizar pedidos</Text>
+          <Text style={[styles.headerTitle, { color: theme.headerTitleColor, fontSize: 24 * fontSizeScale }]}>
+            Finalizar pedidos
+          </Text>
         </View>
 
         {/* Endereço de entrega */}
-        <View style={styles.cardSection}>
+        <View style={[styles.cardSection, { backgroundColor: theme.primaryCardBg }]}>
           <View style={styles.addressRow}>
             <Image
               source={require('./assets/Group 68.png')}
@@ -72,8 +77,8 @@ export default function CheckoutScreen({
               resizeMode="contain"
             />
             <View style={styles.addressInfo}>
-              <Text style={styles.addressTitle}>Endereço de entrega</Text>
-              <Text style={styles.addressSub}>Rua resenha, 123 - Maceió/AL</Text>
+              <Text style={[styles.addressTitle, { fontSize: 15 * fontSizeScale }]}>Endereço de entrega</Text>
+              <Text style={[styles.addressSub, { fontSize: 12 * fontSizeScale }]}>Rua resenha, 123 - Maceió/AL</Text>
             </View>
             <TouchableOpacity
               onPress={() =>
@@ -84,18 +89,18 @@ export default function CheckoutScreen({
               }
               accessibilityRole="button"
             >
-              <Text style={styles.changeText}>Alterar</Text>
+              <Text style={[styles.changeText, { fontSize: 14 * fontSizeScale }]}>Alterar</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Forma de pagamento */}
-        <View style={styles.paymentCard}>
-          <Text style={styles.sectionCardTitle}>Forma de pagamento</Text>
+        <View style={[styles.paymentCard, { backgroundColor: theme.primaryCardBg }]}>
+          <Text style={[styles.sectionCardTitle, { fontSize: 16 * fontSizeScale }]}>Forma de pagamento</Text>
 
           {/* Pix */}
           <TouchableOpacity
-            style={styles.paymentOption}
+            style={[styles.paymentOption, { backgroundColor: theme.optionBg }]}
             onPress={() => setSelectedPayment('pix')}
             activeOpacity={0.7}
           >
@@ -105,7 +110,7 @@ export default function CheckoutScreen({
                 style={styles.paymentIcon}
                 resizeMode="contain"
               />
-              <Text style={styles.paymentText}>Pix</Text>
+              <Text style={[styles.paymentText, { color: theme.optionText, fontSize: 14 * fontSizeScale }]}>Pix</Text>
             </View>
             <Image
               source={require('./assets/grommet-icons_status-good.png')}
@@ -119,7 +124,7 @@ export default function CheckoutScreen({
 
           {/* Cartão de crédito */}
           <TouchableOpacity
-            style={styles.paymentOption}
+            style={[styles.paymentOption, { backgroundColor: theme.optionBg }]}
             onPress={() => setSelectedPayment('credit')}
             activeOpacity={0.7}
           >
@@ -129,7 +134,7 @@ export default function CheckoutScreen({
                 style={styles.paymentIcon}
                 resizeMode="contain"
               />
-              <Text style={styles.paymentText}>Cartão de crédito</Text>
+              <Text style={[styles.paymentText, { color: theme.optionText, fontSize: 14 * fontSizeScale }]}>Cartão de crédito</Text>
             </View>
             <Image
               source={require('./assets/grommet-icons_status-good.png')}
@@ -143,7 +148,7 @@ export default function CheckoutScreen({
 
           {/* Cartão de débito */}
           <TouchableOpacity
-            style={styles.paymentOption}
+            style={[styles.paymentOption, { backgroundColor: theme.optionBg }]}
             onPress={() => setSelectedPayment('debit')}
             activeOpacity={0.7}
           >
@@ -153,7 +158,7 @@ export default function CheckoutScreen({
                 style={styles.paymentIcon}
                 resizeMode="contain"
               />
-              <Text style={styles.paymentText}>Cartão de débito</Text>
+              <Text style={[styles.paymentText, { color: theme.optionText, fontSize: 14 * fontSizeScale }]}>Cartão de débito</Text>
             </View>
             <Image
               source={require('./assets/grommet-icons_status-good.png')}
@@ -167,7 +172,7 @@ export default function CheckoutScreen({
 
           {/* Dinheiro */}
           <TouchableOpacity
-            style={[styles.paymentOption, styles.lastPaymentOption]}
+            style={[styles.paymentOption, styles.lastPaymentOption, { backgroundColor: theme.optionBg }]}
             onPress={() => setSelectedPayment('cash')}
             activeOpacity={0.7}
           >
@@ -177,7 +182,7 @@ export default function CheckoutScreen({
                 style={styles.paymentIcon}
                 resizeMode="contain"
               />
-              <Text style={styles.paymentText}>Dinheiro</Text>
+              <Text style={[styles.paymentText, { color: theme.optionText, fontSize: 14 * fontSizeScale }]}>Dinheiro</Text>
             </View>
             <Image
               source={require('./assets/grommet-icons_status-good.png')}
@@ -191,25 +196,25 @@ export default function CheckoutScreen({
         </View>
 
         {/* Cupom de desconto */}
-        <View style={styles.couponCard}>
-          <Text style={styles.sectionCardTitle}>Cupom de desconto</Text>
-          <View style={styles.couponInfoWrapper}>
-            <Text style={styles.appliedCouponText}>
+        <View style={[styles.couponCard, { backgroundColor: theme.primaryCardBg }]}>
+          <Text style={[styles.sectionCardTitle, { fontSize: 16 * fontSizeScale }]}>Cupom de desconto</Text>
+          <View style={[styles.couponInfoWrapper, { backgroundColor: theme.optionBg }]}>
+            <Text style={[styles.appliedCouponText, { color: theme.optionText, fontSize: 14 * fontSizeScale }]}>
               {selectedCoupon ? selectedCoupon.code : 'Nenhum cupom aplicado'}
             </Text>
             <TouchableOpacity
-              style={styles.chooseCouponButton}
+              style={[styles.chooseCouponButton, { backgroundColor: theme.couponButtonBg }]}
               onPress={onChooseCoupon}
               activeOpacity={0.8}
               accessibilityRole="button"
             >
-              <Text style={styles.chooseCouponText}>
+              <Text style={[styles.chooseCouponText, { color: theme.couponButtonText, fontSize: 13 * fontSizeScale }]}>
                 {selectedCoupon ? 'Trocar' : 'Escolher cupom'}
               </Text>
             </TouchableOpacity>
           </View>
           {selectedCoupon && couponDiscount > 0 && (
-            <Text style={styles.couponDiscountText}>
+            <Text style={[styles.couponDiscountText, { fontSize: 13 * fontSizeScale }]}>
               Desconto: -{formatCurrency(couponDiscount)}
             </Text>
           )}
@@ -218,16 +223,16 @@ export default function CheckoutScreen({
         {/* Total e Botão Finalizar */}
         <View style={styles.footerSummary}>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>{formatCurrency(cartTotal)}</Text>
+            <Text style={[styles.totalLabel, { color: theme.text, fontSize: 22 * fontSizeScale }]}>Total</Text>
+            <Text style={[styles.totalValue, { color: theme.text, fontSize: 26 * fontSizeScale }]}>{formatCurrency(cartTotal)}</Text>
           </View>
 
           <TouchableOpacity
-            style={styles.finalizeButton}
+            style={[styles.finalizeButton, { backgroundColor: theme.primaryBtnBg }]}
             onPress={handleFinalizeOrder}
             activeOpacity={0.85}
           >
-            <Text style={styles.finalizeButtonText}>Finalizar pedido</Text>
+            <Text style={[styles.finalizeButtonText, { fontSize: 18 * fontSizeScale }]}>Finalizar pedido</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -235,17 +240,44 @@ export default function CheckoutScreen({
       {/* Pop-up rápido de confirmação */}
       {showPopup && (
         <View style={styles.popupContainer}>
-          <Text style={styles.popupText}>Pedido concluído com sucesso!</Text>
+          <Text style={[styles.popupText, { fontSize: 16 * fontSizeScale }]}>Pedido concluído com sucesso!</Text>
         </View>
       )}
     </SafeAreaView>
   );
 }
 
+const lightTheme = {
+  background: '#FAFAFA',
+  cardBg: '#FFF',
+  border: '#E0E0E0',
+  headerTitleColor: '#7A1313',
+  primaryCardBg: '#7A1313',
+  optionBg: '#FFF',
+  optionText: '#000',
+  couponButtonBg: '#F2DADA',
+  couponButtonText: '#7A1313',
+  primaryBtnBg: '#7A1313',
+  text: '#000',
+};
+
+const darkTheme = {
+  background: '#121212',
+  cardBg: '#1E1E1E',
+  border: '#333333',
+  headerTitleColor: '#FFFFFF',
+  primaryCardBg: '#1E1E1E',
+  optionBg: '#2A2A2A',
+  optionText: '#FFFFFF',
+  couponButtonBg: '#3A2A2A',
+  couponButtonText: '#E06B6B',
+  primaryBtnBg: '#7A1313',
+  text: '#FFFFFF',
+};
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   scrollContainer: {
     paddingHorizontal: 20,
@@ -255,27 +287,26 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 20,
+    paddingTop: 12, // Abaixado para não ficar sob a barra de status do celular
     marginBottom: 20,
   },
   backButton: {
-    width: 36,
-    height: 36,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   backIconImg: {
-    width: 36,
-    height: 36,
+    width: 22,
+    height: 22,
   },
   headerTitle: {
-    fontSize: 24,
     fontWeight: 'bold',
-    color: '#7A1313',
   },
   cardSection: {
-    backgroundColor: '#7A1313',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
@@ -294,22 +325,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   addressTitle: {
-    fontSize: 15,
     fontWeight: 'bold',
     color: '#FFF',
     marginBottom: 2,
   },
   addressSub: {
-    fontSize: 12,
     color: '#E0E0E0',
   },
   changeText: {
-    fontSize: 14,
     fontWeight: 'bold',
     color: '#FFF',
   },
   paymentCard: {
-    backgroundColor: '#7A1313',
     borderRadius: 16,
     paddingTop: 16,
     paddingHorizontal: 16,
@@ -317,7 +344,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   sectionCardTitle: {
-    fontSize: 16,
     fontWeight: 'bold',
     color: '#FFF',
     marginBottom: 12,
@@ -326,7 +352,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFF',
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderRadius: 10,
@@ -345,9 +370,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   paymentText: {
-    fontSize: 14,
     fontWeight: '600',
-    color: '#000',
   },
   radioIcon: {
     width: 20,
@@ -358,7 +381,6 @@ const styles = StyleSheet.create({
     tintColor: '#7A1313',
   },
   couponCard: {
-    backgroundColor: '#7A1313',
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
@@ -368,32 +390,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFF',
     borderRadius: 10,
     paddingHorizontal: 12,
     height: 46,
   },
   appliedCouponText: {
     flex: 1,
-    fontSize: 14,
-    color: '#000',
     fontWeight: '600',
   },
   chooseCouponButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
-    backgroundColor: '#F2DADA',
   },
   chooseCouponText: {
-    color: '#7A1313',
-    fontSize: 13,
     fontWeight: 'bold',
   },
   couponDiscountText: {
     marginTop: 8,
     color: '#FFF',
-    fontSize: 13,
     fontWeight: '600',
   },
   footerSummary: {
@@ -407,17 +422,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   totalLabel: {
-    fontSize: 22,
     fontWeight: 'bold',
-    color: '#000',
   },
   totalValue: {
-    fontSize: 26,
     fontWeight: 'bold',
-    color: '#000',
   },
   finalizeButton: {
-    backgroundColor: '#7A1313',
     borderRadius: 16,
     paddingVertical: 16,
     justifyContent: 'center',
@@ -426,7 +436,6 @@ const styles = StyleSheet.create({
   },
   finalizeButtonText: {
     color: '#FFF',
-    fontSize: 18,
     fontWeight: 'bold',
   },
   popupContainer: {
@@ -442,7 +451,6 @@ const styles = StyleSheet.create({
   },
   popupText: {
     color: '#FFF',
-    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },

@@ -11,7 +11,14 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { categories, restaurants } from './catalog';
+
+const categories = [
+  { id: 'lanches', name: 'Lanches', image: require('./assets/lanches.png') },
+  { id: 'japonesa', name: 'Japonesa', image: require('./assets/japones.png') },
+  { id: 'bebidas', name: 'Bebidas', image: require('./assets/bebidas.png') },
+  { id: 'pizzas', name: 'Pizzas', image: require('./assets/pizzas.png') },
+  { id: 'outras', name: 'Outras', image: require('./assets/outros.png') },
+];
 
 const bannerSlides = [
   {
@@ -36,6 +43,69 @@ const bannerSlides = [
   },
 ];
 
+const restaurants = [
+  {
+    id: 'burger-house',
+    name: 'Burguer House',
+    category: 'Hambúrguer • $$',
+    categoryId: 'lanches',
+    rating: '4,5',
+    reviews: '(2k)',
+    time: '30 - 45 min',
+    image: require('./assets/burgerhouse.jpg'),
+  },
+  {
+    id: 'pizza-house',
+    name: 'Pizzaria Pontello',
+    category: 'Pizza • $$$',
+    categoryId: 'pizzas',
+    rating: '3,5',
+    reviews: '(8k)',
+    time: '40 - 60 min',
+    image: require('./assets/pontello.jpg'),
+  },
+  {
+    id: 'acai-house',
+    name: 'Açaí Predileto',
+    category: 'Açaí • $',
+    categoryId: 'outras',
+    rating: '4,8',
+    reviews: '(1k)',
+    time: '20 - 40 min',
+    image: require('./assets/acai.jpg'),
+  },
+  {
+    id: 'feijoada-house',
+    name: 'Feijoada do Gordo',
+    category: 'Feijoada • $$$',
+    categoryId: 'outras',
+    rating: '4,7',
+    reviews: '(2k)',
+    time: '40 - 55 min',
+    image: require('./assets/feijoada.jpg'),
+  },
+  {
+    id: 'sushi-house',
+    name: 'Sushi Karma',
+    category: 'Japonesa • $$$$',
+    categoryId: 'japonesa',
+    rating: '4,9',
+    reviews: '(5k)',
+    time: '35 - 50 min',
+    image: require('./assets/sushikarma.jpg'),
+  },
+  {
+    id: 'emporio-bebidas',
+    name: 'Empório de Bebidas',
+    category: 'Bebidas • $$',
+    categoryId: 'bebidas',
+    rating: '4,6',
+    reviews: '(6k)',
+    time: '20 - 35 min',
+    image: require('./assets/emporio.jpg'),
+  },
+];
+
 const tabs = [
   { id: 'home', label: 'Início', image: require('./assets/home.png') },
   { id: 'explore', label: 'Explorar', image: require('./assets/imagemmapa.png') },
@@ -50,6 +120,8 @@ export default function HomeScreen({
   onCartSelect,
   initialTab = 'home',
   onTabSelect,
+  isDarkMode,
+  fontSizeScale = 1.0,
 }) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [activeCategory, setActiveCategory] = useState(null);
@@ -63,7 +135,8 @@ export default function HomeScreen({
   const { width: windowWidth } = useWindowDimensions();
   const bannerWidth = windowWidth - 32;
 
-  // Monitora a abertura e fechamento do teclado virtual
+  const theme = isDarkMode ? darkTheme : lightTheme;
+
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -80,7 +153,6 @@ export default function HomeScreen({
     };
   }, []);
 
-  // Carrossel automático
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveBanner((prevIndex) => {
@@ -104,14 +176,16 @@ export default function HomeScreen({
         activeCategory === null || restaurant.categoryId === activeCategory;
       const matchesSearch =
         query.length === 0 ||
-        `${restaurant.name} ${restaurant.category}`.toLocaleLowerCase('pt-BR').includes(query);
+        `${restaurant.name} ${restaurant.category}`
+          .toLocaleLowerCase('pt-BR')
+          .includes(query);
 
       return matchesCategory && matchesSearch;
     });
   }, [activeCategory, searchQuery]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <ScrollView
         ref={mainScrollViewRef}
         contentContainerStyle={styles.scrollContainer}
@@ -122,26 +196,41 @@ export default function HomeScreen({
         <View style={styles.locationContainer}>
           <Image
             source={require('./assets/famicons_location.png')}
-            style={styles.locationIcon}
+            style={[styles.locationIcon, isDarkMode && { tintColor: '#FFF' }]}
             resizeMode="contain"
           />
-          <Text style={styles.locationText}>Maceió, AL</Text>
+          <Text
+            style={[
+              styles.locationText,
+              { color: theme.text, fontSize: 18 * fontSizeScale },
+            ]}
+          >
+            Maceió, AL
+          </Text>
           <Image
-            source={require('./assets/Vector.png')}
-            style={styles.locationChevron}
+            source={require('./assets/down.png')}
+            style={[styles.locationChevron, { tintColor: theme.text }]}
             resizeMode="contain"
           />
         </View>
 
         {/* Barra de pesquisa */}
-        <View style={styles.searchContainer}>
+        <View
+          style={[
+            styles.searchContainer,
+            { backgroundColor: theme.cardBg, borderColor: theme.border },
+          ]}
+        >
           <Image
             source={require('./assets/ci_search-magnifying-glass.png')}
-            style={styles.searchIconImg}
+            style={[styles.searchIconImg, isDarkMode && { tintColor: '#AAA' }]}
             resizeMode="contain"
           />
           <TextInput
-            style={styles.searchInput}
+            style={[
+              styles.searchInput,
+              { color: theme.text, fontSize: 15 * fontSizeScale },
+            ]}
             placeholder="Buscar restaurantes, pratos..."
             placeholderTextColor="#888"
             value={searchQuery}
@@ -160,7 +249,7 @@ export default function HomeScreen({
           style={[styles.bannerCarousel, { width: bannerWidth }]}
           onMomentumScrollEnd={(event) => {
             const index = Math.round(
-              event.nativeEvent.contentOffset.x / bannerWidth,
+              event.nativeEvent.contentOffset.x / bannerWidth
             );
             setActiveBanner(index);
           }}
@@ -229,6 +318,7 @@ export default function HomeScreen({
                 <Text
                   style={[
                     styles.categoryName,
+                    { color: theme.text, fontSize: 13 * fontSizeScale },
                     isSelected && styles.selectedCategoryName,
                   ]}
                 >
@@ -240,12 +330,23 @@ export default function HomeScreen({
         </ScrollView>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Restaurantes em destaque</Text>
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: theme.text, fontSize: 17 * fontSizeScale },
+            ]}
+          >
+            Restaurantes em destaque
+          </Text>
           <TouchableOpacity
             onPress={() => setActiveCategory(null)}
             accessibilityRole="button"
           >
-            <Text style={styles.seeAllText}>Ver todos</Text>
+            <Text
+              style={[styles.seeAllText, { fontSize: 14 * fontSizeScale }]}
+            >
+              Ver todos
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -255,7 +356,10 @@ export default function HomeScreen({
             {filteredRestaurants.map((restaurant) => (
               <TouchableOpacity
                 key={restaurant.id}
-                style={styles.restaurantCard}
+                style={[
+                  styles.restaurantCard,
+                  { backgroundColor: theme.cardBg, borderColor: theme.border },
+                ]}
                 activeOpacity={0.9}
                 onPress={() => onRestaurantSelect?.(restaurant)}
                 accessibilityRole="button"
@@ -267,46 +371,85 @@ export default function HomeScreen({
                   resizeMode="cover"
                 />
                 <View style={styles.restaurantInfo}>
-                  <Text style={styles.restaurantName} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.restaurantName,
+                      { fontSize: 15 * fontSizeScale },
+                    ]}
+                    numberOfLines={1}
+                  >
                     {restaurant.name}
                   </Text>
-                  <Text style={styles.restaurantCategory} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.restaurantCategory,
+                      { fontSize: 12 * fontSizeScale },
+                    ]}
+                    numberOfLines={1}
+                  >
                     {restaurant.category}
                   </Text>
                   <View style={styles.restaurantDetailsRow}>
                     <Text style={styles.starIcon}>★</Text>
-                    <Text style={styles.ratingText}>
+                    <Text
+                      style={[
+                        styles.ratingText,
+                        { color: theme.text, fontSize: 12 * fontSizeScale },
+                      ]}
+                    >
                       {restaurant.rating}{' '}
-                      <Text style={styles.reviewsText}>{restaurant.reviews}</Text>
+                      <Text style={styles.reviewsText}>
+                        {restaurant.reviews}
+                      </Text>
                     </Text>
-                    <Text style={styles.clockIcon}>◷</Text>
-                    <Text style={styles.timeText}>{restaurant.time}</Text>
+                    <Text
+                      style={[styles.clockIcon, { color: theme.subText }]}
+                    >
+                      ◷
+                    </Text>
+                    <Text
+                      style={[
+                        styles.timeText,
+                        { color: theme.subText, fontSize: 12 * fontSizeScale },
+                      ]}
+                    >
+                      {restaurant.time}
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
             ))}
           </View>
         ) : (
-          <Text style={styles.emptyState}>
+          <Text
+            style={[
+              styles.emptyState,
+              { color: theme.subText, fontSize: 14 * fontSizeScale },
+            ]}
+          >
             Nenhum restaurante encontrado.
           </Text>
         )}
       </ScrollView>
 
-      {/* Barra Inferior (Some automaticamente quando o teclado abre) */}
+      {/* Barra Inferior */}
       <View
         style={[
           styles.bottomTabBar,
+          {
+            backgroundColor: theme.tabBarBg,
+            borderTopColor: theme.tabBarBorder,
+          },
           isKeyboardVisible && styles.hiddenBottomTabBar,
         ]}
       >
-          {tabs.map((tab) => (
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+
+          return (
             <TouchableOpacity
               key={tab.id}
-              style={[
-                styles.tabButton,
-                activeTab === tab.id && styles.activeTabButton,
-              ]}
+              style={[styles.tabButton, isActive && styles.activeTabButton]}
               onPress={() => {
                 if (tab.id === 'profile') {
                   onProfileSelect?.();
@@ -324,25 +467,54 @@ export default function HomeScreen({
                 }
 
                 setActiveTab(tab.id);
+                if (tab.id === 'home') {
+                  setActiveCategory(null);
+                  setSearchQuery('');
+                  mainScrollViewRef.current?.scrollTo({ y: 0, animated: true });
+                }
                 onTabSelect?.(tab.id);
               }}
               activeOpacity={0.8}
               accessibilityRole="button"
               accessibilityLabel={tab.label}
-              accessibilityState={{ selected: activeTab === tab.id }}
+              accessibilityState={{ selected: isActive }}
             >
-              <Image source={tab.image} style={styles.tabIcon} resizeMode="contain" />
+              <Image
+                source={tab.image}
+                style={styles.tabIcon}
+                resizeMode="contain"
+              />
             </TouchableOpacity>
-          ))}
+          );
+        })}
       </View>
     </SafeAreaView>
   );
 }
 
+const lightTheme = {
+  background: '#FAFAFA',
+  cardBg: '#FFF',
+  border: '#E0E0E0',
+  text: '#000',
+  subText: '#666',
+  tabBarBg: '#7A1313',
+  tabBarBorder: '#5a0d0d',
+};
+
+const darkTheme = {
+  background: '#121212',
+  cardBg: '#1E1E1E',
+  border: '#333',
+  text: '#FFF',
+  subText: '#AAA',
+  tabBarBg: '#1E1E1E',
+  tabBarBorder: '#333',
+};
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   scrollContainer: {
     paddingHorizontal: 16,
@@ -361,29 +533,21 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   locationText: {
-    fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
   },
   locationChevron: {
     width: 14,
     height: 14,
     marginLeft: 6,
-    tintColor: '#000',
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
     borderWidth: 1,
-    borderColor: '#8B0000',
     borderRadius: 30,
     height: 48,
     paddingHorizontal: 16,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
     elevation: 2,
   },
   searchIconImg: {
@@ -393,8 +557,6 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    color: '#000',
   },
   bannerCarousel: {
     height: 110,
@@ -439,8 +601,6 @@ const styles = StyleSheet.create({
     opacity: 0.75,
   },
   categoryName: {
-    fontSize: 13,
-    color: '#333',
     fontWeight: '500',
   },
   selectedCategoryName: {
@@ -454,12 +614,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 17,
     fontWeight: 'bold',
-    color: '#000',
   },
   seeAllText: {
-    fontSize: 14,
     color: '#8B0000',
     fontWeight: '600',
   },
@@ -470,15 +627,10 @@ const styles = StyleSheet.create({
   },
   restaurantCard: {
     width: '48%',
-    backgroundColor: '#FFF',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
     marginBottom: 16,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
     elevation: 2,
   },
   restaurantImage: {
@@ -489,12 +641,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   restaurantName: {
-    fontSize: 15,
     fontWeight: 'bold',
     color: '#8B0000',
   },
   restaurantCategory: {
-    fontSize: 12,
     color: '#666',
     marginVertical: 3,
   },
@@ -508,9 +658,7 @@ const styles = StyleSheet.create({
     color: '#DAA520',
   },
   ratingText: {
-    fontSize: 12,
     fontWeight: 'bold',
-    color: '#000',
     marginLeft: 4,
   },
   reviewsText: {
@@ -519,17 +667,12 @@ const styles = StyleSheet.create({
   },
   clockIcon: {
     fontSize: 17,
-    color: '#555',
     marginLeft: 8,
   },
   timeText: {
-    fontSize: 12,
-    color: '#555',
     marginLeft: 3,
   },
   emptyState: {
-    color: '#666',
-    fontSize: 14,
     textAlign: 'center',
     paddingVertical: 24,
   },
@@ -539,12 +682,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 65,
-    backgroundColor: '#7A1313',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#5a0d0d',
   },
   hiddenBottomTabBar: {
     display: 'none',

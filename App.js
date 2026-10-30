@@ -16,17 +16,22 @@ import CouponsScreen from './CouponsScreen';
 import FavoritesScreen from './FavoritesScreen';
 import { calculateCouponDiscount } from './couponUtils';
 import { restaurants } from './catalog';
+import SettingsScreen from './SettingsScreen';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'explore' | 'profile' | 'coupons' | 'favorites' | 'restaurant' | 'cart' | 'checkout'
+  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'explore' | 'profile' | 'settings' | 'coupons' | 'favorites' | 'restaurant' | 'cart' | 'checkout'
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [favoriteRestaurantIds, setFavoriteRestaurantIds] = useState([]);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [homeTab, setHomeTab] = useState('home');
   const [cartReturnScreen, setCartReturnScreen] = useState('home');
-  const [couponReturnScreen, setCouponReturnScreen] = useState('profile');
   const [restaurantReturnScreen, setRestaurantReturnScreen] = useState('home');
+  const [couponReturnScreen, setCouponReturnScreen] = useState('profile');
+  
+  // Estados Globais de Aparência
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [fontSizeScale, setFontSizeScale] = useState(1.0);
 
   const openCart = (returnScreen) => {
     setCartReturnScreen(returnScreen);
@@ -61,7 +66,11 @@ export default function App() {
   if (currentScreen === 'forgot') {
     return (
       <TapEffects>
-        <ForgotPasswordScreen onBack={() => setCurrentScreen('login')} />
+        <ForgotPasswordScreen
+          onBack={() => setCurrentScreen('login')}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
+        />
       </TapEffects>
     );
   }
@@ -69,7 +78,11 @@ export default function App() {
   if (currentScreen === 'register') {
     return (
       <TapEffects>
-        <RegisterScreen onBack={() => setCurrentScreen('login')} />
+        <RegisterScreen
+          onBack={() => setCurrentScreen('login')}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
+        />
       </TapEffects>
     );
   }
@@ -81,6 +94,8 @@ export default function App() {
           onLogin={() => setCurrentScreen('home')}
           onRegister={() => setCurrentScreen('register')}
           onForgotPassword={() => setCurrentScreen('forgot')}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
         />
       </TapEffects>
     );
@@ -100,6 +115,8 @@ export default function App() {
             setRestaurantReturnScreen('home');
             setCurrentScreen('restaurant');
           }}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
         />
       </TapEffects>
     );
@@ -109,7 +126,10 @@ export default function App() {
     return (
       <TapEffects>
         <ProfileScreen
+          onOpenSettings={() => setCurrentScreen('settings')}
+          onCouponsPress={() => openCoupons('profile')}
           onCouponsSelect={() => openCoupons('profile')}
+          onFavoritesPress={() => setCurrentScreen('favorites')}
           onFavoritesSelect={() => setCurrentScreen('favorites')}
           onTabSelect={(tab) => {
             if (tab === 'home') {
@@ -128,6 +148,22 @@ export default function App() {
             }
           }}
           onLogout={() => setCurrentScreen('login')}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
+        />
+      </TapEffects>
+    );
+  }
+
+  if (currentScreen === 'settings') {
+    return (
+      <TapEffects>
+        <SettingsScreen
+          onBack={() => setCurrentScreen('profile')}
+          isDarkMode={isDarkMode}
+          onToggleTheme={() => setIsDarkMode((prev) => !prev)}
+          fontSizeScale={fontSizeScale}
+          onChangeFontSize={setFontSizeScale}
         />
       </TapEffects>
     );
@@ -151,6 +187,8 @@ export default function App() {
             setRestaurantReturnScreen('favorites');
             setCurrentScreen('restaurant');
           }}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
         />
       </TapEffects>
     );
@@ -166,6 +204,8 @@ export default function App() {
             setSelectedCoupon(coupon);
             setCurrentScreen(couponReturnScreen);
           }}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
         />
       </TapEffects>
     );
@@ -196,6 +236,8 @@ export default function App() {
             setRestaurantReturnScreen('explore');
             setCurrentScreen('restaurant');
           }}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
         />
       </TapEffects>
     );
@@ -246,6 +288,8 @@ export default function App() {
               ];
             });
           }}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
         />
       </TapEffects>
     );
@@ -280,6 +324,8 @@ export default function App() {
           onRemoveItem={(id) =>
             setCartItems((items) => items.filter((item) => item.id !== id))
           }
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
         />
       </TapEffects>
     );
@@ -300,6 +346,8 @@ export default function App() {
             setHomeTab('home');
             setCurrentScreen('home');
           }}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
         />
       </TapEffects>
     );
@@ -308,7 +356,11 @@ export default function App() {
   if (currentScreen === 'welcome') {
     return (
       <TapEffects>
-        <WelcomeScreen onStart={() => setCurrentScreen('login')} />
+        <WelcomeScreen
+          onStart={() => setCurrentScreen('login')}
+          isDarkMode={isDarkMode}
+          fontSizeScale={fontSizeScale}
+        />
       </TapEffects>
     );
   }
