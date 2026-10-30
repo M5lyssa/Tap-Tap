@@ -6,11 +6,12 @@ import LoginScreen from './Login';
 import RegisterScreen from './Register';
 import ForgotPasswordScreen from './ForgotPassword';
 import HomeScreen from './Home';
+import ProfileScreen from './ProfileScreen';
 import RestaurantDetailScreen from './RestaurantDetail';
 import CartScreen from './CartScreen';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'restaurant' | 'cart'
+  const [currentScreen, setCurrentScreen] = useState('splash'); // 'splash' | 'welcome' | 'login' | 'register' | 'forgot' | 'home' | 'profile' | 'restaurant' | 'cart'
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [cartItems, setCartItems] = useState([]);
 
@@ -47,6 +48,24 @@ export default function App() {
           setSelectedRestaurant(restaurant);
           setCurrentScreen('restaurant');
         }}
+        onTabSelect={(tabId) => {
+          if (tabId === 'profile') {
+            setCurrentScreen('profile');
+          }
+        }}
+      />
+    );
+  }
+
+  if (currentScreen === 'profile') {
+    return (
+      <ProfileScreen
+        onTabSelect={(tabId) => {
+          if (tabId === 'home') {
+            setCurrentScreen('home');
+          }
+        }}
+        onLogout={() => setCurrentScreen('login')}
       />
     );
   }
